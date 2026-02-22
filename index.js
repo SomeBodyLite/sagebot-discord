@@ -139,7 +139,7 @@ async function updateAfkPanel() {
                     ? formatMskDateTime(returnDate)
                     : formatMskTime(returnDate);
 
-                  return `${i + 1}) <@${id}> — Причина: ${info.reason}, Где: ${info.location}, Вернусь: **${returnText} МСК**`;
+                  return `${i + 1}) <@${id}> — Причина: **${info.reason}** | Где: **${info.location}** | Вернусь: **${returnText} МСК**`;
                 })
                 .join("\n"),
       );
@@ -148,11 +148,11 @@ async function updateAfkPanel() {
       new ButtonBuilder()
         .setCustomId("go_afk")
         .setLabel("Выйти в АФК")
-        .setStyle(ButtonStyle.Secondary),
+        .setStyle(ButtonStyle.Success),
       new ButtonBuilder()
         .setCustomId("back_afk")
         .setLabel("Вернуться")
-        .setStyle(ButtonStyle.Primary),
+        .setStyle(ButtonStyle.Secondary),
     );
     await message.edit({ embeds: [embed], components: [row] });
   } catch (e) {
@@ -190,11 +190,11 @@ async function updateInactivePanel() {
       new ButtonBuilder()
         .setCustomId("go_inactive")
         .setLabel("Уйти в инактив")
-        .setStyle(ButtonStyle.Danger),
+        .setStyle(ButtonStyle.Success),
       new ButtonBuilder()
         .setCustomId("back_inactive")
         .setLabel("Выйти из инактива")
-        .setStyle(ButtonStyle.Success),
+        .setStyle(ButtonStyle.Secondary),
     );
     await message.edit({ embeds: [embed], components: [row] });
   } catch (e) {

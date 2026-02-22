@@ -229,27 +229,29 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 client.on("interactionCreate", async (i) => {
   if (i.isChatInputCommand()) {
     if (i.commandName === "afkpanel" && i.channelId !== AFK_PANEL_CHANNEL_ID) {
-      return i.reply({
-        content: "❌ Эту команду можно использовать только в канале АФК.",
-        ephemeral: true,
-      });
+      return i.reply({ content: "❌ Эту команду можно использовать только в канале АФК.", ephemeral: true });
+    }
+    if (i.commandName === "inactivepanel" && i.channelId !== INACTIVE_PANEL_CHANNEL_ID) {
+      return i.reply({ content: "❌ Эту команду можно использовать только в канале инактива.", ephemeral: true });
     }
 
-    if (
-      i.commandName === "inactivepanel" &&
-      i.channelId !== INACTIVE_PANEL_CHANNEL_ID
-    ) {
-      return i.reply({
-        content: "❌ Эту команду можно использовать только в канале инактива.",
-        ephemeral: true,
-      });
-    }
     const isAfk = i.commandName === "afkpanel";
-    const panels = load(PANEL_FILE);
+    
+    
+    let msg;
+    if (isAfk) {
+        msg = await i.channel.send({
+            embeds: [new EmbedBuilder().setTitle("🕒 Загрузка АФК...").setColor(0xaa0000)],
+            components: [] 
+        });
+    } else {
+        msg = await i.channel.send({
+            embeds: [new EmbedBuilder().setTitle("📅 Загрузка инактива...").setColor(0x5865f2)],
+            components: []
+        });
+    }
 
-    const msg = await i.channel.send({
-      content: `Загрузка панели ${isAfk ? "АФК" : "инактива"}...`,
-    });
+    const panels = load(PANEL_FILE);
     panels[isAfk ? "afk" : "inactive"] = {
       channelId: i.channel.id,
       messageId: msg.id,
@@ -257,7 +259,8 @@ client.on("interactionCreate", async (i) => {
     save(PANEL_FILE, panels);
 
     isAfk ? await updateAfkPanel() : await updateInactivePanel();
-    return i.reply({ content: "Панель установлена.", ephemeral: true });
+
+    return i.reply({ content: "✅ Панель создана!", ephemeral: true });
   }
 
   if (i.isButton()) {

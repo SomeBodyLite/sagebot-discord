@@ -23,6 +23,9 @@ const INACTIVE_DATA_FILE = "./inactiveData.json";
 const PANEL_FILE = "./panelData.json";
 const BANNER_URL = "https://i.ibb.co/RdZ7SXt/photo-2025-11-12-00-31-24.jpg";
 
+const AFK_LOG_CHANNEL_ID = "1475056241750315058";
+const INACTIVE_LOG_CHANNEL_ID = "1475056268619022408";
+
 // ================= HELPERS =================
 
 function load(file) {
@@ -96,6 +99,15 @@ function convertMSKToTimestamp(timeStr) {
 
   return target.getTime();
 }
+async function sendLog(channelId, message) {
+  try {
+    const channel = await client.channels.fetch(channelId);
+    if (!channel) return;
+    await channel.send(message);
+  } catch (e) {
+    console.log("Ошибка логирования:", e.message);
+  }
+}
 // ================= PANELS LOGIC =================
 
 async function updateAfkPanel() {
@@ -124,7 +136,7 @@ async function updateAfkPanel() {
                     ? formatMskDateTime(returnDate)
                     : formatMskTime(returnDate);
 
-                  return `${i + 1}) <@${id}> — Причина: ${info.reason} — Вернётся: **${returnText}**`;
+                  return `${i + 1}) <@${id}> — Причина: ${info.reason}, Где: ${info.location}, Вернусь: **${returnText}**`;
                 })
                 .join("\n"),
       );
@@ -249,6 +261,14 @@ client.on("interactionCreate", async (i) => {
             .setStyle(TextInputStyle.Short)
             .setRequired(true),
         ),
+        new ActionRowBuilder().addComponents(
+          new TextInputBuilder()
+            .setCustomId("location")
+            .setLabel("Где оставил перса?")
+            .setStyle(TextInputStyle.Short)
+            .setPlaceholder("Например: особа, арена, казик и т.д.")
+            .setRequired(true),
+        ),
       );
       await i.showModal(modal);
     }
@@ -262,7 +282,7 @@ client.on("interactionCreate", async (i) => {
           new TextInputBuilder()
             .setCustomId("reason")
             .setLabel("Причина")
-            .setStyle(TextInputStyle.Paragraph)
+            .setStyle(TextInputStyle.Short)
             .setRequired(true),
         ),
         new ActionRowBuilder().addComponents(
@@ -280,12 +300,23 @@ client.on("interactionCreate", async (i) => {
     if (i.customId === "back_afk" || i.customId === "back_inactive") {
       const isAfk = i.customId === "back_afk";
       const file = isAfk ? DATA_FILE : INACTIVE_DATA_FILE;
+      const logChannel = isAfk ? AFK_LOG_CHANNEL_ID : INACTIVE_LOG_CHANNEL_ID;
+
       const data = load(file);
+
       if (!data[i.user.id])
         return i.reply({ content: "Вас нет в списке.", ephemeral: true });
+
+      await sendLog(
+        logChannel,
+        `🟢 <@${i.user.id}> вернулся ${isAfk ? "из АФК" : "из инактива"} ${isAfk ? "\n Оставлял перса: **" + data[i.user.id].location + "**" : ""}`,
+      );
+
       delete data[i.user.id];
       save(file, data);
+
       await i.reply({ content: "С возвращением!", ephemeral: true });
+
       isAfk ? updateAfkPanel() : updateInactivePanel();
     }
   }
@@ -295,14 +326,56 @@ client.on("interactionCreate", async (i) => {
       const time = i.fields.getTextInputValue("time");
       if (!isValidTime(time))
         return i.reply({ content: "Формат времени: ЧЧ:ММ", ephemeral: true });
+
+      const reason = i.fields.getTextInputValue("reason");
+      const location = i.fields.getTextInputValue("location");
+
       const data = load(DATA_FILE);
       const untilTimestamp = convertMSKToTimestamp(time);
+
+      const alreadyAfk = !!data[i.user.id];
+      const oldData = data[i.user.id];
+
       data[i.user.id] = {
-        reason: i.fields.getTextInputValue("reason"),
+        reason,
+        location,
         time,
         until: untilTimestamp,
       };
+
       save(DATA_FILE, data);
+
+      const returnDate = new Date(untilTimestamp);
+      const returnText = isTomorrow(untilTimestamp)
+        ? formatMskDateTime(returnDate)
+        : formatMskTime(returnDate);
+
+      // ================= ЛОГИКА ЛОГОВ =================
+
+      if (alreadyAfk) {
+        const oldReturnDate = new Date(oldData.until);
+        const oldReturnText = isTomorrow(oldData.until)
+          ? formatMskDateTime(oldReturnDate)
+          : formatMskTime(oldReturnDate);
+
+        await sendLog(
+          AFK_LOG_CHANNEL_ID,
+          `🔄 <@${i.user.id}> ОБНОВИЛ СРОК АФК
+┣ Было до: **${oldReturnText}**
+┣ Стало до: **${returnText}**
+┣ Локация: **${oldData.location} → ${location}**
+┕ Причина: **${reason}**`,
+        );
+      } else {
+        await sendLog(
+          AFK_LOG_CHANNEL_ID,
+          `🟡 <@${i.user.id}> ушёл в АФК
+┣ Причина: **${reason}**
+┣ Где оставил перса: **${location}**
+┕ Вернётся: **${returnText}**`,
+        );
+      }
+
       await i.reply({ content: "Статус обновлен.", ephemeral: true });
       updateAfkPanel();
     }
@@ -317,6 +390,10 @@ client.on("interactionCreate", async (i) => {
       const data = load(INACTIVE_DATA_FILE);
       data[i.user.id] = { reason: i.fields.getTextInputValue("reason"), date };
       save(INACTIVE_DATA_FILE, data);
+      await sendLog(
+        INACTIVE_LOG_CHANNEL_ID,
+        `🔴 <@${i.user.id}> ушёл в инактив\n┣ Причина: **${data[i.user.id].reason}**\n┕ Возврат: **${date}**`,
+      );
       await i.reply({ content: "Инактив зафиксирован.", ephemeral: true });
       updateInactivePanel();
     }
@@ -326,13 +403,18 @@ client.on("interactionCreate", async (i) => {
 client.on("ready", () => {
   console.log(`${client.user.tag} готов.`);
 
-  setInterval(() => {
+  setInterval(async () => {
     const data = load(DATA_FILE);
     const now = Date.now();
     let changed = false;
 
     for (const userId in data) {
       if (data[userId].until && now >= data[userId].until) {
+        await sendLog(
+          AFK_LOG_CHANNEL_ID,
+          `⏰ <@${userId}> автоматически вышел из АФК (время истекло).\n┕ Оставлял перса: **${data[userId].location}**`,
+        );
+
         delete data[userId];
         changed = true;
       }

@@ -23,8 +23,11 @@ const INACTIVE_DATA_FILE = "./inactiveData.json";
 const PANEL_FILE = "./panelData.json";
 const BANNER_URL = "https://i.ibb.co/RdZ7SXt/photo-2025-11-12-00-31-24.jpg";
 
-const AFK_LOG_CHANNEL_ID = "1475056241750315058";
-const INACTIVE_LOG_CHANNEL_ID = "1475056268619022408";
+const AFK_LOG_CHANNEL_ID = "1475069595105759365";
+const INACTIVE_LOG_CHANNEL_ID = "1475072661129527388";
+
+const AFK_PANEL_CHANNEL_ID = "1475074370354286737";
+const INACTIVE_PANEL_CHANNEL_ID = "1475074430416846848";
 
 // ================= HELPERS =================
 
@@ -225,6 +228,22 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 client.on("interactionCreate", async (i) => {
   if (i.isChatInputCommand()) {
+    if (i.commandName === "afkpanel" && i.channelId !== AFK_PANEL_CHANNEL_ID) {
+      return i.reply({
+        content: "❌ Эту команду можно использовать только в канале АФК.",
+        ephemeral: true,
+      });
+    }
+
+    if (
+      i.commandName === "inactivepanel" &&
+      i.channelId !== INACTIVE_PANEL_CHANNEL_ID
+    ) {
+      return i.reply({
+        content: "❌ Эту команду можно использовать только в канале инактива.",
+        ephemeral: true,
+      });
+    }
     const isAfk = i.commandName === "afkpanel";
     const panels = load(PANEL_FILE);
 

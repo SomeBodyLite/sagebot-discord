@@ -124,7 +124,7 @@ async function updateAfkPanel() {
     const users = Object.entries(data);
 
     const embed = new EmbedBuilder()
-      .setTitle(`🕒 Люди в АФК | от ${formatMskTime(getMskNow())} МСК`)
+      .setTitle(`🕒 Люди в АФК | состояние на ${formatMskTime(getMskNow())} МСК`)
       .setColor(0xaa0000)
       .setImage(BANNER_URL)
       .setDescription(
@@ -139,7 +139,7 @@ async function updateAfkPanel() {
                     ? formatMskDateTime(returnDate)
                     : formatMskTime(returnDate);
 
-                  return `${i + 1}) <@${id}> — Причина: ${info.reason}, Где: ${info.location}, Вернусь: **${returnText}**`;
+                  return `${i + 1}) <@${id}> — Причина: ${info.reason}, Где: ${info.location}, Вернусь: **${returnText} МСК**`;
                 })
                 .join("\n"),
       );
@@ -279,7 +279,7 @@ client.on("interactionCreate", async (i) => {
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
             .setCustomId("time")
-            .setLabel("Время возврата (ЧЧ:ММ)")
+            .setLabel("Время возврата ПО МСК (ЧЧ:ММ)")
             .setStyle(TextInputStyle.Short)
             .setRequired(true),
         ),

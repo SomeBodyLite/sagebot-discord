@@ -1,4 +1,4 @@
-import { Client, Interaction } from 'discord.js';
+import { Client, GuildMember, Interaction } from 'discord.js';
 import { ConfigType } from '../config';
 import { AfkRepository } from '../repositories/afkRepository';
 import { InactiveRepository } from '../repositories/inactiveRepository';
@@ -93,7 +93,16 @@ async function handleButton(
 						content: 'Вы уже заняли автомобиль',
 					});
 				}
-				await i.showModal(createCarParkModal(freeCarsList));
+
+				const member = i.member as GuildMember;
+
+				const rolesIds = member.roles.cache.map((role) => role.id);
+
+				const filteredCarList = freeCarsList.filter((car) =>
+					car.roles.some((roleId) => rolesIds.includes(roleId)),
+				);
+
+				await i.showModal(createCarParkModal(filteredCarList));
 				return true;
 
 			case 'release_current':

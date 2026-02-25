@@ -4,6 +4,7 @@ export type Car = {
 	number: string;
 	who_take: null | string;
 	taked_At: null | number;
+	roles: string[];
 };
 
 export type AfkUserInfo = {

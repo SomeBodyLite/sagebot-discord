@@ -1,7 +1,14 @@
 const { sendLog } = require('../utils/logging');
-const { createAfkModal, createInactiveModal } = require('../ui/modals');
+const {
+	createAfkModal,
+	createInactiveModal,
+	createCarParkModal,
+} = require('../ui/modals');
 const { safeReply } = require('../utils/safeReply');
-const { MessageFlags } = require('discord.js');
+const { StringSelectMenuBuilder } = require('@discordjs/builders');
+const { StringSelectMenuOptionBuilder } = require('@discordjs/builders');
+const { ActionRowBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('@discordjs/builders');
 
 async function handleButton(
 	i,
@@ -10,8 +17,10 @@ async function handleButton(
 		config,
 		afkRepo,
 		inactiveRepo,
+		carParkRepo,
 		updateAfkPanel,
 		updateInactivePanel,
+		updateCarParkPanel,
 	},
 ) {
 	if (!i.isButton()) return false;
@@ -59,6 +68,49 @@ async function handleButton(
 		else await updateInactivePanel();
 
 		return true;
+	}
+
+	const carsParkBtnsIds = ['list_cars', 'release_current'];
+	if (carsParkBtnsIds.includes(i.customId)) {
+		const allCars = await carParkRepo.getAll();
+		const freeCarsList = await carParkRepo.getAllFree();
+		const takedCar = allCars.find((car) => car.who_take === i.user.id);
+
+		switch (i.customId) {
+			case 'list_cars':
+				if (takedCar) {
+					return await safeReply(i, {
+						content: 'Вы уже заняли автомобиль',
+					});
+				}
+				await i.showModal(createCarParkModal(freeCarsList));
+				return true;
+
+			case 'release_current':
+				if (!takedCar) {
+					return await safeReply(i, {
+						content: 'Вы не занимали автомобиль',
+					});
+				}
+
+				const updatedCar = {
+					...takedCar,
+					who_take: null,
+					taked_At: null,
+				};
+				await carParkRepo.update(takedCar.id, updatedCar);
+
+				updateCarParkPanel();
+
+				return await safeReply(i, {
+					content: 'Вы освободили автомобиль',
+				});
+
+			default:
+				console.log('error');
+				await updateCarParkPanel();
+				return false;
+		}
 	}
 
 	return false;

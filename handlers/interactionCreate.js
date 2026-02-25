@@ -2,6 +2,7 @@ const { handleButton } = require('./buttons');
 const { handleModal } = require('./modals');
 const { safeReply } = require('../utils/safeReply');
 const { commandMap } = require('../commands');
+const { handleStringSelectMenu } = require('./selectMenu');
 
 function createInteractionHandler(deps) {
 	return async (i) => {
@@ -16,6 +17,8 @@ function createInteractionHandler(deps) {
 			}
 			if (i.isButton()) return await handleButton(i, deps);
 			if (i.isModalSubmit()) return await handleModal(i, deps);
+			if (i.isStringSelectMenu())
+				return await handleStringSelectMenu(i, deps);
 			return false;
 		} catch (e) {
 			console.log('interaction handler error:', e);

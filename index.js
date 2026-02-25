@@ -6,6 +6,7 @@ const { createAfkRepository } = require('./repositories/afkRepository');
 const {
 	createInactiveRepository,
 } = require('./repositories/inactiveRepository');
+const { createCarParkRepository } = require('./repositories/carParkRepository');
 const { createInteractionHandler } = require('./handlers/interactionCreate');
 const { createPanelService } = require('./services/panelService');
 const { commandData } = require('./commands');
@@ -23,6 +24,8 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 // Создание репозиториев и подключение хранилищ
 const afkRepo = createAfkRepository(config.files.afk);
 const inactiveRepo = createInactiveRepository(config.files.inactive);
+const carParkRepo = createCarParkRepository(config.files.carpark);
+
 //
 // Сервис обновления/отрисовки панелей
 const panelService = createPanelService({
@@ -30,8 +33,10 @@ const panelService = createPanelService({
 	config,
 	afkRepo,
 	inactiveRepo,
+	carParkRepo,
 });
-const { updateAfkPanel, updateInactivePanel } = panelService;
+const { updateAfkPanel, updateInactivePanel, updateCarParkPanel } =
+	panelService;
 
 // ================= REGISTRATION =================
 registerGuildCommands({
@@ -49,8 +54,10 @@ client.on(
 		config,
 		afkRepo,
 		inactiveRepo,
+		carParkRepo,
 		updateAfkPanel,
 		updateInactivePanel,
+		updateCarParkPanel,
 	}),
 );
 
@@ -79,5 +86,44 @@ client.once('clientReady', () => {
 			await updateAfkPanel();
 		}
 	}, 60000);
+
+	setInterval(async () => {
+		const cars = await carParkRepo.getAll();
+		const now = Date.now();
+		let changed = false;
+
+		for (const car of cars) {
+			if (!car.taked_At) continue;
+			const TWO_HOURS = 2 * 60 * 60 * 1000;
+			const releaseTime = car.taked_At + TWO_HOURS;
+
+			if (now >= releaseTime) {
+				await carParkRepo.update(car.id, {
+					...car,
+					who_take: null,
+					taked_At: null,
+				});
+
+				try {
+					const user = await client.users.fetch(car.who_take);
+					await user.send(
+						'Автомобиль был особожден по истечении 2х часов!',
+					);
+				} catch (err) {
+					console.log(
+						`Не удалось отправить DM пользователю ${car.who_take}:`,
+						err.message,
+					);
+				}
+
+				changed = true;
+			}
+		}
+
+		if (changed) {
+			await updateCarParkPanel();
+		}
+	}, 6000);
 });
+
 client.login(process.env.TOKEN);

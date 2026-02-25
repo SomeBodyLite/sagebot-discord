@@ -3,6 +3,9 @@ const {
 	ActionRowBuilder,
 	TextInputBuilder,
 	TextInputStyle,
+	StringSelectMenuBuilder,
+	StringSelectMenuOptionBuilder,
+	LabelBuilder,
 } = require('discord.js');
 
 //----------------------------------------------------------------------
@@ -77,4 +80,36 @@ function createInactiveModal() {
 	return modal;
 }
 
-module.exports = { createAfkModal, createInactiveModal };
+//----------------------------------------------------------------------
+// CarPark Модальное окно
+//----------------------------------------------------------------------
+function createCarParkModal(freeCarsList) {
+	const modal = new ModalBuilder({
+		customId: 'modal_carpark',
+		title: 'Автопарк',
+	});
+
+	const options = freeCarsList.map((car) =>
+		new StringSelectMenuOptionBuilder()
+			.setLabel(car.name)
+			.setDescription(car.number)
+			.setValue(car.id),
+	);
+
+	const select = new StringSelectMenuBuilder()
+		.setCustomId('select_list_cars')
+		.setPlaceholder('Выберите из списка')
+		.addOptions(options);
+
+	const selectLabel = new LabelBuilder()
+		.setLabel('Выберите автомобиль')
+		.setDescription(
+			'Вы займете его на 2 часа, после чего бронирование нужно будет повторить!',
+		)
+		.setStringSelectMenuComponent(select);
+
+	modal.addLabelComponents(selectLabel);
+	return modal;
+}
+
+module.exports = { createAfkModal, createInactiveModal, createCarParkModal };

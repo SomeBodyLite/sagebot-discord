@@ -7,6 +7,7 @@ const {
 	formatMskTime,
 	formatMskDateTime,
 	convertMskTimeToNextTimestamp,
+	getMskNow,
 } = require('../utils/time');
 
 function isValidLength(value, { min, max }) {
@@ -21,8 +22,10 @@ async function handleModal(
 		config,
 		afkRepo,
 		inactiveRepo,
+		carParkRepo,
 		updateAfkPanel,
 		updateInactivePanel,
+		updateCarParkPanel,
 	},
 ) {
 	if (!i.isModalSubmit()) return false;
@@ -99,6 +102,26 @@ async function handleModal(
 			content: 'Статус обновлен.',
 		});
 		updateAfkPanel();
+		return true;
+	}
+
+	// Обработка и валидация CarPark модалки
+	if (i.customId === 'modal_carpark') {
+		const selectField = i.fields.fields.get('select_list_cars');
+		const carId = selectField.values[0];
+		let car = await carParkRepo.get(carId);
+		const now = Date.now();
+		car = {
+			...car,
+			who_take: i.user.id,
+			taked_At: now,
+		};
+		await carParkRepo.update(carId, car);
+
+		await safeReply(i, {
+			content: `Вы выбрали автомобиль: ${car.name} | ${car.number}`,
+		});
+		await updateCarParkPanel();
 		return true;
 	}
 

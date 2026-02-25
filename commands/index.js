@@ -1,7 +1,8 @@
 const afkpanel = require('./afkpanel');
 const inactivepanel = require('./inactivepanel');
+const carparkpanel = require('./carparkpanel');
 
-const commands = [afkpanel, inactivepanel];
+const commands = [afkpanel, inactivepanel, carparkpanel];
 
 const commandData = commands.map((cmd) => cmd.data.toJSON());
 

@@ -15,11 +15,20 @@ const {
 //----------------------------------------------------------------------
 // Отрисовка Сообщений с панелями
 //----------------------------------------------------------------------
-function createPanelService({ client, config, afkRepo, inactiveRepo }) {
+function createPanelService({
+	client,
+	config,
+	afkRepo,
+	inactiveRepo,
+	carParkRepo,
+}) {
 	async function updatePanel({ panelKey, buildEmbed, buildRow }) {
 		const panels = await loadAsync(config.files.panels);
 		const meta = panels[panelKey];
-		if (!meta?.channelId || !meta?.messageId) return;
+		if (!meta?.channelId || !meta?.messageId) {
+			console.error('нет channelId или messageId');
+			return;
+		}
 
 		try {
 			const channel = await client.channels.fetch(meta.channelId);
@@ -29,6 +38,7 @@ function createPanelService({ client, config, afkRepo, inactiveRepo }) {
 			await message.edit({ embeds: [embed], components: [row] });
 		} catch (e) {
 			console.log(`${panelKey} Panel update error:`, e?.message ?? e);
+			console.error(e);
 		}
 	}
 
@@ -64,6 +74,7 @@ function createPanelService({ client, config, afkRepo, inactiveRepo }) {
 			.setImage(config.BANNER_URL)
 			.setDescription(description);
 	}
+
 	//----------------------------------------------------------------------
 	// АФК панель кнопки
 	//----------------------------------------------------------------------
@@ -126,6 +137,50 @@ function createPanelService({ client, config, afkRepo, inactiveRepo }) {
 		);
 	}
 
+	//----------------------------------------------------------------------
+	// CarPark панель билдер
+	//----------------------------------------------------------------------
+	async function buildCarParkEmbed() {
+		const data = await carParkRepo.getAll();
+
+		const description = data
+			.map((carData) => {
+				if (carData.who_take) {
+					return `🔒 ${carData.number} | ${carData.name} **Занял**: <@${carData.who_take}>`;
+				} else {
+					return `✅ ${carData.number} | ${carData.name}`;
+				}
+			})
+			.join('\n');
+
+		return (
+			new EmbedBuilder()
+				.setTitle('Автопарк')
+				.setColor(0x5865f2)
+				// .setImage(config.BANNER_URL)
+				.setDescription(description)
+		);
+	}
+
+	//----------------------------------------------------------------------
+	// CarPark панель кнопки
+	//----------------------------------------------------------------------
+	function buildCarParkRow() {
+		return new ActionRowBuilder().addComponents(
+			new ButtonBuilder({
+				customId: 'list_cars',
+				label: 'Список Авто',
+				style: ButtonStyle.Success,
+			}),
+
+			new ButtonBuilder({
+				customId: 'release_current',
+				label: 'Освободить текущий',
+				style: ButtonStyle.Danger,
+			}),
+		);
+	}
+
 	return {
 		async updateAfkPanel() {
 			return updatePanel({
@@ -139,6 +194,13 @@ function createPanelService({ client, config, afkRepo, inactiveRepo }) {
 				panelKey: 'inactive',
 				buildEmbed: buildInactiveEmbed,
 				buildRow: buildInactiveRow,
+			});
+		},
+		async updateCarParkPanel() {
+			return updatePanel({
+				panelKey: 'carpark',
+				buildEmbed: buildCarParkEmbed,
+				buildRow: buildCarParkRow,
 			});
 		},
 	};

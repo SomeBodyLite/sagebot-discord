@@ -22,7 +22,6 @@ async function execute(i, { config, updateInactivePanel }) {
 				color: 0x5865f2,
 			}),
 		],
-		// components: [],
 	});
 
 	const panels = await loadAsync(config.files.panels);

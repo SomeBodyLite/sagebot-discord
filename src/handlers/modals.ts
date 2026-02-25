@@ -1,22 +1,29 @@
-const { sendLog } = require('../utils/logging');
-const { safeReply } = require('../utils/safeReply');
-const {
-	isValidTime,
-	isValidDate,
-	isTomorrow,
-	formatMskTime,
-	formatMskDateTime,
+import { Client, Interaction, SelectMenuModalData } from 'discord.js';
+import { ConfigType } from '../config';
+import { AfkRepository } from '../repositories/afkRepository';
+import { InactiveRepository } from '../repositories/inactiveRepository';
+import { CarParkRepository } from '../repositories/carParkRepository';
+import {
 	convertMskTimeToNextTimestamp,
-	getMskNow,
-} = require('../utils/time');
+	formatMskDateTime,
+	formatMskTime,
+	isTomorrow,
+	isValidDate,
+	isValidTime,
+} from '../utils/time';
+import { safeReply } from '../utils/safeReply';
+import { sendLog } from '../utils/logging';
 
-function isValidLength(value, { min, max }) {
+function isValidLength(
+	value: string,
+	{ min, max }: { min: number; max: number },
+) {
 	const len = value.trim().length;
 	return len >= min && len <= max;
 }
 
 async function handleModal(
-	i,
+	i: Interaction,
 	{
 		client,
 		config,
@@ -26,6 +33,15 @@ async function handleModal(
 		updateAfkPanel,
 		updateInactivePanel,
 		updateCarParkPanel,
+	}: {
+		client: Client;
+		config: ConfigType;
+		afkRepo: AfkRepository;
+		inactiveRepo: InactiveRepository;
+		carParkRepo: CarParkRepository;
+		updateAfkPanel: () => Promise<void>;
+		updateInactivePanel: () => Promise<void>;
+		updateCarParkPanel: () => Promise<void>;
 	},
 ) {
 	if (!i.isModalSubmit()) return false;
@@ -107,9 +123,14 @@ async function handleModal(
 
 	// Обработка и валидация CarPark модалки
 	if (i.customId === 'modal_carpark') {
-		const selectField = i.fields.fields.get('select_list_cars');
+		const selectField = i.fields.fields.get(
+			'select_list_cars',
+		) as SelectMenuModalData;
+
+		if (!selectField) return;
 		const carId = selectField.values[0];
 		let car = await carParkRepo.get(carId);
+		if (!car) return;
 		const now = Date.now();
 		car = {
 			...car,

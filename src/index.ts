@@ -1,19 +1,16 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const config = require('./config');
-const { sendLog } = require('./utils/logging');
-const { createAfkRepository } = require('./repositories/afkRepository');
-const {
-	createInactiveRepository,
-} = require('./repositories/inactiveRepository');
-const { createCarParkRepository } = require('./repositories/carParkRepository');
-const { createInteractionHandler } = require('./handlers/interactionCreate');
-const { createPanelService } = require('./services/panelService');
-const { commandData } = require('./commands');
-const { registerGuildCommands } = require('./services/commandRegistry');
-
-const { Client, GatewayIntentBits } = require('discord.js');
-
+import { Client, GatewayIntentBits } from 'discord.js';
+import { sendLog } from './utils/logging';
+import { config } from './config';
+import { createInteractionHandler } from './handlers/interactionCreate';
+import { createPanelService } from './services/panelService';
+import { createAfkRepository } from './repositories/afkRepository';
+import { createInactiveRepository } from './repositories/inactiveRepository';
+import { createCarParkRepository } from './repositories/carParkRepository';
+import { registerGuildCommands } from './services/commandRegistry';
+import { commandData } from './commands';
 //
 // Токен из .env
 const TOKEN = process.env.TOKEN;
@@ -62,7 +59,7 @@ client.on(
 );
 
 client.once('clientReady', () => {
-	console.log(`${client.user.tag} готов.`);
+	console.log(`${client.user?.tag} готов.`);
 
 	setInterval(async () => {
 		const data = await afkRepo.getAll();
@@ -93,7 +90,7 @@ client.once('clientReady', () => {
 		let changed = false;
 
 		for (const car of cars) {
-			if (!car.taked_At) continue;
+			if (!car.taked_At || !car.who_take) continue;
 			const TWO_HOURS = 2 * 60 * 60 * 1000;
 			const releaseTime = car.taked_At + TWO_HOURS;
 
@@ -109,11 +106,13 @@ client.once('clientReady', () => {
 					await user.send(
 						'Автомобиль был особожден по истечении 2х часов!',
 					);
-				} catch (err) {
-					console.log(
-						`Не удалось отправить DM пользователю ${car.who_take}:`,
-						err.message,
-					);
+				} catch (e) {
+					if (e instanceof Error) {
+						console.log(
+							`Не удалось отправить DM пользователю ${car.who_take}:`,
+							e.message,
+						);
+					}
 				}
 
 				changed = true;

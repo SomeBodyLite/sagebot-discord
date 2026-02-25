@@ -1,17 +1,18 @@
-const { sendLog } = require('../utils/logging');
-const {
+import { Client, Interaction } from 'discord.js';
+import { ConfigType } from '../config';
+import { AfkRepository } from '../repositories/afkRepository';
+import { InactiveRepository } from '../repositories/inactiveRepository';
+import { CarParkRepository } from '../repositories/carParkRepository';
+import {
 	createAfkModal,
-	createInactiveModal,
 	createCarParkModal,
-} = require('../ui/modals');
-const { safeReply } = require('../utils/safeReply');
-const { StringSelectMenuBuilder } = require('@discordjs/builders');
-const { StringSelectMenuOptionBuilder } = require('@discordjs/builders');
-const { ActionRowBuilder } = require('@discordjs/builders');
-const { EmbedBuilder } = require('@discordjs/builders');
+	createInactiveModal,
+} from '../ui/modals';
+import { safeReply } from '../utils/safeReply';
+import { sendLog } from '../utils/logging';
 
 async function handleButton(
-	i,
+	i: Interaction,
 	{
 		client,
 		config,
@@ -21,6 +22,15 @@ async function handleButton(
 		updateAfkPanel,
 		updateInactivePanel,
 		updateCarParkPanel,
+	}: {
+		client: Client;
+		config: ConfigType;
+		afkRepo: AfkRepository;
+		inactiveRepo: InactiveRepository;
+		carParkRepo: CarParkRepository;
+		updateAfkPanel: () => Promise<void>;
+		updateInactivePanel: () => Promise<void>;
+		updateCarParkPanel: () => Promise<void>;
 	},
 ) {
 	if (!i.isButton()) return false;

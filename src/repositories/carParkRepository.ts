@@ -1,21 +1,31 @@
+import { Car } from '../types';
+
 const { loadAsync, saveAsync } = require('../utils/storage');
 
-function createCarParkRepository(filePath) {
+export interface CarParkRepository {
+	getAll: () => Promise<Car[]>;
+	get: (id: string) => Promise<Car | undefined>;
+	getAllFree: () => Promise<Car[]>;
+	update: (id: string, entry: Car) => Promise<void>;
+	remove: (id: string) => Promise<void>;
+}
+
+export function createCarParkRepository(filePath: string): CarParkRepository {
 	return {
 		async getAll() {
 			return loadAsync(filePath);
 		},
 		async get(id) {
-			const data = await loadAsync(filePath);
+			const data: Car[] = await loadAsync(filePath);
 			return data.find((element) => element.id === id);
 		},
 		async getAllFree() {
-			const data = await loadAsync(filePath);
+			const data: Car[] = await loadAsync(filePath);
 			const filteredCars = data.filter((car) => !car.who_take);
 			return filteredCars;
 		},
 		async update(id, entry) {
-			const data = await loadAsync(filePath);
+			const data: Car[] = await loadAsync(filePath);
 
 			const index = data.findIndex((item) => item.id === id);
 
@@ -30,14 +40,13 @@ function createCarParkRepository(filePath) {
 
 			await saveAsync(filePath, data);
 
-			return data[index];
+			return;
 		},
 		async remove(id) {
 			const data = await loadAsync(filePath);
-			const existed = Boolean(data[id]);
 			delete data[id];
 			await saveAsync(filePath, data);
-			return existed;
+			return;
 		},
 	};
 }

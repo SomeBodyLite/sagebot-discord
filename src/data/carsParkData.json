@@ -4,7 +4,8 @@
     "name": "Ubermacht W8",
     "number": "SAGEXX13",
     "who_take": null,
-    "taked_At": null
+    "taked_At": null,
+    "roles": []
   },
   {
     "id": "2",

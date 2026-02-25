@@ -1,9 +1,20 @@
-const {
-	EmbedBuilder,
+import {
+	ActionRowBuilder,
+	ActionRowData,
+	AnyComponentBuilder,
+	APIEmbed,
 	ButtonBuilder,
 	ButtonStyle,
-	ActionRowBuilder,
-} = require('discord.js');
+	Client,
+	EmbedBuilder,
+	TopLevelComponentData,
+} from 'discord.js';
+import { ConfigType } from '../config';
+import { AfkRepository } from '../repositories/afkRepository';
+import { InactiveRepository } from '../repositories/inactiveRepository';
+import { CarParkRepository } from '../repositories/carParkRepository';
+import { AfkUserInfo, Car, InactiveUserInfo } from '../types';
+
 const { loadAsync } = require('../utils/storage');
 const {
 	isTomorrow,
@@ -15,14 +26,28 @@ const {
 //----------------------------------------------------------------------
 // Отрисовка Сообщений с панелями
 //----------------------------------------------------------------------
-function createPanelService({
+export function createPanelService({
 	client,
 	config,
 	afkRepo,
 	inactiveRepo,
 	carParkRepo,
+}: {
+	client: Client;
+	config: ConfigType;
+	afkRepo: AfkRepository;
+	inactiveRepo: InactiveRepository;
+	carParkRepo: CarParkRepository;
 }) {
-	async function updatePanel({ panelKey, buildEmbed, buildRow }) {
+	async function updatePanel({
+		panelKey,
+		buildEmbed,
+		buildRow,
+	}: {
+		panelKey: string;
+		buildEmbed: () => Promise<EmbedBuilder>;
+		buildRow: () => any;
+	}) {
 		const panels = await loadAsync(config.files.panels);
 		const meta = panels[panelKey];
 		if (!meta?.channelId || !meta?.messageId) {
@@ -32,22 +57,26 @@ function createPanelService({
 
 		try {
 			const channel = await client.channels.fetch(meta.channelId);
+			if (!channel || !channel.isTextBased()) return;
+
 			const message = await channel.messages.fetch(meta.messageId);
 			const embed = await buildEmbed();
 			const row = buildRow();
 			await message.edit({ embeds: [embed], components: [row] });
 		} catch (e) {
-			console.log(`${panelKey} Panel update error:`, e?.message ?? e);
-			console.error(e);
+			if (e instanceof Error) {
+				console.log(`${panelKey} Panel update error:`, e?.message);
+				console.error(e);
+			}
 		}
 	}
 
 	//----------------------------------------------------------------------
 	// АФК панель билдер
 	//----------------------------------------------------------------------
-	async function buildAfkEmbed() {
+	async function buildAfkEmbed(): Promise<EmbedBuilder> {
 		const data = await afkRepo.getAll();
-		const users = Object.entries(data);
+		const users: [string, AfkUserInfo][] = Object.entries(data);
 
 		const description =
 			users.length === 0
@@ -98,7 +127,7 @@ function createPanelService({
 	//----------------------------------------------------------------------
 	async function buildInactiveEmbed() {
 		const data = await inactiveRepo.getAll();
-		const users = Object.entries(data);
+		const users: [string, InactiveUserInfo][] = Object.entries(data);
 
 		const description =
 			users.length === 0
@@ -141,7 +170,7 @@ function createPanelService({
 	// CarPark панель билдер
 	//----------------------------------------------------------------------
 	async function buildCarParkEmbed() {
-		const data = await carParkRepo.getAll();
+		const data: Car[] = await carParkRepo.getAll();
 
 		const description = data
 			.map((carData) => {
@@ -205,5 +234,3 @@ function createPanelService({
 		},
 	};
 }
-
-module.exports = { createPanelService };

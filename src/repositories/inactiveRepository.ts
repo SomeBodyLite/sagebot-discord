@@ -1,6 +1,13 @@
 const { loadAsync, saveAsync } = require('../utils/storage');
 
-function createAfkRepository(filePath) {
+export interface InactiveRepository {
+	getAll: () => {};
+	get: (userId: string) => {};
+	has: (userId: string) => {};
+	set: (userId: string, entry: {}) => {};
+	remove: (userId: string) => {};
+}
+export function createInactiveRepository(filePath: string): InactiveRepository {
 	return {
 		async getAll() {
 			return loadAsync(filePath);
@@ -10,8 +17,7 @@ function createAfkRepository(filePath) {
 			return data[userId];
 		},
 		async has(userId) {
-			const data = await this.get(userId);
-			return data ? true : false;
+			return Boolean(await this.get(userId));
 		},
 		async set(userId, entry) {
 			const data = await loadAsync(filePath);
@@ -29,4 +35,4 @@ function createAfkRepository(filePath) {
 	};
 }
 
-module.exports = { createAfkRepository };
+module.exports = { createInactiveRepository };

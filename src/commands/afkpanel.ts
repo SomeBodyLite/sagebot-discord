@@ -1,20 +1,32 @@
+import { ChatInputCommandInteraction } from 'discord.js';
+import { ConfigType } from '../config';
+
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { loadAsync, saveAsync } = require('../utils/storage');
 const { safeReply } = require('../utils/safeReply');
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('afkpanel')
 	.setDescription('Создать панель АФК');
 
-async function execute(i, { config, updateAfkPanel }) {
-	if (i.channelId !== config.channels.afkPanel) {
-		await safeReply(i, {
+type ExecuteOptions = {
+	config: ConfigType;
+	updateAfkPanel: () => Promise<void>;
+};
+
+export async function execute(
+	interaction: ChatInputCommandInteraction,
+	{ config, updateAfkPanel }: ExecuteOptions,
+): Promise<boolean> {
+	if (!interaction.channel?.isSendable()) return false;
+	if (interaction.channelId !== config.channels.afkPanel) {
+		await safeReply(interaction, {
 			content: '❌ Эту команду можно использовать только в канале АФК.',
 		});
 		return true;
 	}
 
-	const msg = await i.channel.send({
+	const msg = await interaction.channel.send({
 		embeds: [
 			new EmbedBuilder({
 				title: '🕒 Загрузка АФК...',
@@ -25,14 +37,14 @@ async function execute(i, { config, updateAfkPanel }) {
 
 	const panels = await loadAsync(config.files.panels);
 	panels.afk = {
-		channelId: i.channel.id,
+		channelId: interaction.channel.id,
 		messageId: msg.id,
 	};
 	await saveAsync(config.files.panels, panels);
 
 	await updateAfkPanel();
 
-	await safeReply(i, {
+	await safeReply(interaction, {
 		content: '✅ Панель создана!',
 	});
 

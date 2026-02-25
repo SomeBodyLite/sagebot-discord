@@ -1,11 +1,27 @@
+import { Client, Interaction } from 'discord.js';
+import { ConfigType } from '../config';
+import { AfkRepository } from '../repositories/afkRepository';
+import { InactiveRepository } from '../repositories/inactiveRepository';
+import { CarParkRepository } from '../repositories/carParkRepository';
+
 const { handleButton } = require('./buttons');
 const { handleModal } = require('./modals');
 const { safeReply } = require('../utils/safeReply');
 const { commandMap } = require('../commands');
 const { handleStringSelectMenu } = require('./selectMenu');
 
-function createInteractionHandler(deps) {
-	return async (i) => {
+interface Deps {
+	client: Client;
+	config: ConfigType;
+	afkRepo: AfkRepository;
+	inactiveRepo: InactiveRepository;
+	carParkRepo: CarParkRepository;
+	updateAfkPanel: () => Promise<void>;
+	updateInactivePanel: () => Promise<void>;
+	updateCarParkPanel: () => Promise<void>;
+}
+export function createInteractionHandler(deps: Deps) {
+	return async (i: Interaction) => {
 		try {
 			if (i.isChatInputCommand()) {
 				const command = commandMap.get(i.commandName);
@@ -29,5 +45,3 @@ function createInteractionHandler(deps) {
 		}
 	};
 }
-
-module.exports = { createInteractionHandler };

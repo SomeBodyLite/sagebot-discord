@@ -1,6 +1,8 @@
+import { Interaction, InteractionReplyOptions } from "discord.js";
+
 const { MessageFlags } = require('discord.js');
 
-async function safeReply(i, payload) {
+export async function safeReply(i: Interaction, payload: InteractionReplyOptions) {
 	if (!i?.isRepliable?.()) return;
 
 	payload.flags = payload.flags ?? MessageFlags.Ephemeral;
@@ -13,4 +15,3 @@ async function safeReply(i, payload) {
 	}
 }
 
-module.exports = { safeReply };

@@ -14,8 +14,23 @@ const AFK_PANEL_CHANNEL_ID = '1475560107143073874';
 const INACTIVE_PANEL_CHANNEL_ID = '1475560177842524250';
 
 const CAR_PANEL_CHANNEL_ID = '1476157716442386452';
-
-module.exports = {
+export interface ConfigType {
+	files: {
+		afk: string;
+		inactive: string;
+		panels: string;
+		carpark: string;
+	};
+	BANNER_URL: string;
+	channels: {
+		afkLog: string;
+		inactiveLog: string;
+		afkPanel: string;
+		inactivePanel: string;
+		carpark: string;
+	};
+}
+export const config: ConfigType = {
 	files: {
 		afk: DATA_FILE,
 		inactive: INACTIVE_DATA_FILE,

@@ -142,7 +142,21 @@ async function handleModal(
 		await safeReply(i, {
 			content: `Вы выбрали автомобиль: ${car.name} | ${car.number}`,
 		});
-		await updateCarParkPanel();
+
+		sendLog(
+			client,
+			config.channels.carparkLog,
+			`<@${i.user.id}> взял автомобиль
+┣ Название: **${car.name}**
+┣ Номер: **${car.number}**
+┕ Время: **${new Date(car.taked_At!).toLocaleTimeString('ru-RU', {
+				timeZone: 'Europe/Moscow',
+				hour: '2-digit',
+				minute: '2-digit',
+			})}**`,
+		);
+
+		updateCarParkPanel();
 		return true;
 	}
 

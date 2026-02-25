@@ -103,8 +103,16 @@ client.once('clientReady', () => {
 
 				try {
 					const user = await client.users.fetch(car.who_take);
-					await user.send(
+					user.send(
 						'Автомобиль был особожден по истечении 2х часов!',
+					);
+					sendLog(
+						client,
+						config.channels.carparkLog,
+						`<@${car.who_take}> автоматически освободил автомобиль
+┣ Название: **${car.name}**
+┕ Номер: **${car.number}**
+						`,
 					);
 				} catch (e) {
 					if (e instanceof Error) {

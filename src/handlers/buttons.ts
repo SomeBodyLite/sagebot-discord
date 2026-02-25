@@ -112,6 +112,15 @@ async function handleButton(
 
 				updateCarParkPanel();
 
+				sendLog(
+					client,
+					config.channels.carparkLog,
+					`<@${i.user.id}> освободил автомобиль
+┣ Название: **${updatedCar.name}**
+┕  Номер: **${updatedCar.number}**
+`,
+				);
+
 				return await safeReply(i, {
 					content: 'Вы освободили автомобиль',
 				});

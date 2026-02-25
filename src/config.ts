@@ -28,6 +28,7 @@ export interface ConfigType {
 		afkPanel: string;
 		inactivePanel: string;
 		carpark: string;
+		carparkLog: string;
 	};
 }
 export const config: ConfigType = {
@@ -44,5 +45,6 @@ export const config: ConfigType = {
 		afkPanel: AFK_PANEL_CHANNEL_ID,
 		inactivePanel: INACTIVE_PANEL_CHANNEL_ID,
 		carpark: CAR_PANEL_CHANNEL_ID,
+		carparkLog: CAR_PANEL_CHANNEL_ID,
 	},
 };

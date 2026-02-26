@@ -3,24 +3,24 @@ import {
 	SlashCommandBuilder,
 	EmbedBuilder,
 } from 'discord.js';
-import { ConfigType } from '../config';
-import { loadAsync, saveAsync } from '../utils/storage';
-import { safeReply } from '../utils/safeReply';
+import { config, ConfigType } from '../../config.js';
+import { loadAsync, saveAsync } from '../../utils/storage.js';
+import { safeReply } from '../../utils/safeReply.js';
+import { Command } from '../../types/Command.js';
 
-export const data = new SlashCommandBuilder()
+const data = new SlashCommandBuilder()
 	.setName('inactivepanel')
 	.setDescription('Создать панель инактива');
 
 type ExecuteOptions = {
-	config: ConfigType;
 	updateInactivePanel: () => Promise<void>;
 };
 
-export async function execute(
+async function execute(
 	interaction: ChatInputCommandInteraction,
-	{ config, updateInactivePanel }: ExecuteOptions,
-): Promise<boolean> {
-	if (!interaction.channel?.isSendable()) return false;
+	{ updateInactivePanel }: ExecuteOptions,
+): Promise<void> {
+	if (!interaction.channel?.isSendable()) return;
 
 	if (interaction.channelId !== config.channels.inactivePanel) {
 		await safeReply(interaction, {
@@ -28,7 +28,7 @@ export async function execute(
 				'❌ Эту команду можно использовать только в канале инактива.',
 			ephemeral: true,
 		});
-		return true;
+		return;
 	}
 
 	const message = await interaction.channel.send({
@@ -51,8 +51,12 @@ export async function execute(
 
 	await safeReply(interaction, {
 		content: '✅ Панель создана!',
-		ephemeral: true,
 	});
 
-	return true;
+	return;
 }
+const command: Command = {
+	data,
+	execute,
+};
+export default command;

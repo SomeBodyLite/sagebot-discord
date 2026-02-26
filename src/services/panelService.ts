@@ -9,19 +9,18 @@ import {
 	EmbedBuilder,
 	TopLevelComponentData,
 } from 'discord.js';
-import { ConfigType } from '../config';
-import { AfkRepository } from '../repositories/afkRepository';
-import { InactiveRepository } from '../repositories/inactiveRepository';
-import { CarParkRepository } from '../repositories/carParkRepository';
-import { AfkUserInfo, Car, InactiveUserInfo } from '../types';
-
-const { loadAsync } = require('../utils/storage');
-const {
-	isTomorrow,
-	getMskNow,
-	formatMskTime,
+import { ConfigType } from '../config.js';
+import { AfkRepository } from '../repositories/afkRepository.js';
+import { InactiveRepository } from '../repositories/inactiveRepository.js';
+import { CarParkRepository } from '../repositories/carParkRepository.js';
+import { AfkUserInfo, Car, InactiveUserInfo } from '../types/index.js';
+import { loadAsync } from '../utils/storage.js';
+import {
 	formatMskDateTime,
-} = require('../utils/time');
+	formatMskTime,
+	getMskNow,
+	isTomorrow,
+} from '../utils/time.js';
 
 //----------------------------------------------------------------------
 // Отрисовка Сообщений с панелями

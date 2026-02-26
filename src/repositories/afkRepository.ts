@@ -1,4 +1,4 @@
-import { loadAsync, saveAsync } from '../utils/storage';
+import { loadAsync, saveAsync } from '../utils/storage.js';
 
 export interface AfkRepository {
 	getAll: () => any;

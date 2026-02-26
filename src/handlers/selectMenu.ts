@@ -1,12 +1,10 @@
 import { Client, Interaction } from 'discord.js';
-import { ConfigType } from '../config';
-import { AfkRepository } from '../repositories/afkRepository';
-import { InactiveRepository } from '../repositories/inactiveRepository';
-import { CarParkRepository } from '../repositories/carParkRepository';
+import { ConfigType } from '../config.js';
+import { AfkRepository } from '../repositories/afkRepository.js';
+import { InactiveRepository } from '../repositories/inactiveRepository.js';
+import { CarParkRepository } from '../repositories/carParkRepository.js';
 
-const { safeReply } = require('../utils/safeReply');
-
-async function handleStringSelectMenu(
+export async function handleStringSelectMenu(
 	i: Interaction,
 	{
 		client,
@@ -30,5 +28,3 @@ async function handleStringSelectMenu(
 ) {
 	if (!i.isStringSelectMenu()) return false;
 }
-
-module.exports = { handleStringSelectMenu };

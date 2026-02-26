@@ -1,5 +1,5 @@
-const fs = require('fs');
-const fsp = require('fs').promises;
+import fs from 'fs';
+import fsp from 'fs/promises';
 
 export function ensureJsonFile(file: string) {
 	if (!fs.existsSync(file)) fs.writeFileSync(file, '{}', 'utf8');
@@ -46,5 +46,3 @@ export async function saveAsync(file: string, data: any) {
 	await ensureJsonFile(file);
 	await fsp.writeFile(file, JSON.stringify(data ?? {}, null, 2), 'utf8');
 }
-
-

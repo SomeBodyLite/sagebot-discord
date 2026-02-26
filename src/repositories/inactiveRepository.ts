@@ -1,4 +1,4 @@
-const { loadAsync, saveAsync } = require('../utils/storage');
+import { loadAsync, saveAsync } from '../utils/storage.js';
 
 export interface InactiveRepository {
 	getAll: () => {};
@@ -34,5 +34,3 @@ export function createInactiveRepository(filePath: string): InactiveRepository {
 		},
 	};
 }
-
-module.exports = { createInactiveRepository };

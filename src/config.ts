@@ -1,9 +1,28 @@
-const path = require('path');
+import { fileURLToPath } from 'url';
+import 'dotenv/config';
 
-const DATA_FILE = path.join(__dirname, './data/afkData.json');
-const INACTIVE_DATA_FILE = path.join(__dirname, './data/inactiveData.json');
-const PANEL_FILE = path.join(__dirname, './data/panelData.json');
-const CARPARK_FILE = path.join(__dirname, './data/carsParkData.json');
+const DATA_FILE = fileURLToPath(
+	new URL('./data/afkData.json', import.meta.url),
+);
+const INACTIVE_DATA_FILE = fileURLToPath(
+	new URL('./data/inactiveData.json', import.meta.url),
+);
+const PANEL_FILE = fileURLToPath(
+	new URL('./data/panelData.json', import.meta.url),
+);
+const CARPARK_FILE = fileURLToPath(
+	new URL('./data/carsParkData.json', import.meta.url),
+);
+
+function getEnv(name: string): string {
+	const value = process.env[name];
+	if (!value) {
+		throw new Error(`Environment variable ${name} is required`);
+	}
+	return value;
+}
+
+export const TOKEN = getEnv('TOKEN');
 
 const BANNER_URL = 'https://i.ibb.co/RdZ7SXt/photo-2025-11-12-00-31-24.jpg';
 

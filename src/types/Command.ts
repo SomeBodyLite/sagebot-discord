@@ -5,5 +5,5 @@ export interface Command {
 	execute: (
 		interaction: ChatInputCommandInteraction,
 		options: any,
-	) => Promise<boolean>;
+	) => Promise<void>;
 }

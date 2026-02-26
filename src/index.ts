@@ -1,19 +1,16 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 import { Client, GatewayIntentBits } from 'discord.js';
-import { sendLog } from './utils/logging';
-import { config } from './config';
-import { createInteractionHandler } from './handlers/interactionCreate';
-import { createPanelService } from './services/panelService';
-import { createAfkRepository } from './repositories/afkRepository';
-import { createInactiveRepository } from './repositories/inactiveRepository';
-import { createCarParkRepository } from './repositories/carParkRepository';
-import { registerGuildCommands } from './services/commandRegistry';
-import { commandData } from './commands';
-//
-// Токен из .env
-const TOKEN = process.env.TOKEN;
+import { sendLog } from './utils/logging.js';
+import { config, TOKEN } from './config.js';
+import { createInteractionHandler } from './handlers/interactionCreate.js';
+import { createPanelService } from './services/panelService.js';
+import { createAfkRepository } from './repositories/afkRepository.js';
+import { createInactiveRepository } from './repositories/inactiveRepository.js';
+import { createCarParkRepository } from './repositories/carParkRepository.js';
+import { registerGuildCommands } from './services/commandRegistry.js';
+import { loadCommands } from './commands/index.js';
+
 //
 // Создание клиента
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -36,11 +33,11 @@ const { updateAfkPanel, updateInactivePanel, updateCarParkPanel } =
 	panelService;
 
 // ================= REGISTRATION =================
-registerGuildCommands({
-	token: TOKEN,
+await loadCommands(client);
+await registerGuildCommands({
 	clientId: process.env.CLIENT_ID,
 	guildId: process.env.GUILD_ID,
-	commandData,
+	client,
 });
 // ================= HANDLERS =================
 
@@ -133,4 +130,4 @@ client.once('clientReady', () => {
 	}, 6000);
 });
 
-client.login(process.env.TOKEN);
+client.login(TOKEN);

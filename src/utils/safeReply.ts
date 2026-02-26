@@ -1,8 +1,9 @@
-import { Interaction, InteractionReplyOptions } from "discord.js";
+import { Interaction, InteractionReplyOptions, MessageFlags } from 'discord.js';
 
-const { MessageFlags } = require('discord.js');
-
-export async function safeReply(i: Interaction, payload: InteractionReplyOptions) {
+export async function safeReply(
+	i: Interaction,
+	payload: InteractionReplyOptions,
+) {
 	if (!i?.isRepliable?.()) return;
 
 	payload.flags = payload.flags ?? MessageFlags.Ephemeral;
@@ -14,4 +15,3 @@ export async function safeReply(i: Interaction, payload: InteractionReplyOptions
 		// ignore secondary failures (e.g. "Unknown interaction")
 	}
 }
-

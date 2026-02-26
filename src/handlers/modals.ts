@@ -1,8 +1,8 @@
 import { Client, Interaction, SelectMenuModalData } from 'discord.js';
-import { ConfigType } from '../config';
-import { AfkRepository } from '../repositories/afkRepository';
-import { InactiveRepository } from '../repositories/inactiveRepository';
-import { CarParkRepository } from '../repositories/carParkRepository';
+import { ConfigType } from '../config.js';
+import { AfkRepository } from '../repositories/afkRepository.js';
+import { InactiveRepository } from '../repositories/inactiveRepository.js';
+import { CarParkRepository } from '../repositories/carParkRepository.js';
 import {
 	convertMskTimeToNextTimestamp,
 	formatMskDateTime,
@@ -10,9 +10,9 @@ import {
 	isTomorrow,
 	isValidDate,
 	isValidTime,
-} from '../utils/time';
-import { safeReply } from '../utils/safeReply';
-import { sendLog } from '../utils/logging';
+} from '../utils/time.js';
+import { safeReply } from '../utils/safeReply.js';
+import { sendLog } from '../utils/logging.js';
 
 function isValidLength(
 	value: string,
@@ -22,7 +22,7 @@ function isValidLength(
 	return len >= min && len <= max;
 }
 
-async function handleModal(
+export async function handleModal(
 	i: Interaction,
 	{
 		client,
@@ -195,5 +195,3 @@ async function handleModal(
 
 	return false;
 }
-
-module.exports = { handleModal };

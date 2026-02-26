@@ -1,6 +1,5 @@
-import { Car } from '../types';
-
-const { loadAsync, saveAsync } = require('../utils/storage');
+import { Car } from '../types/index.js';
+import { loadAsync, saveAsync } from '../utils/storage.js';
 
 export interface CarParkRepository {
 	getAll: () => Promise<Car[]>;
@@ -50,5 +49,3 @@ export function createCarParkRepository(filePath: string): CarParkRepository {
 		},
 	};
 }
-
-module.exports = { createCarParkRepository };

@@ -1,17 +1,17 @@
 import { Client, GuildMember, Interaction } from 'discord.js';
-import { ConfigType } from '../config';
-import { AfkRepository } from '../repositories/afkRepository';
-import { InactiveRepository } from '../repositories/inactiveRepository';
-import { CarParkRepository } from '../repositories/carParkRepository';
+import { ConfigType } from '../config.js';
+import { AfkRepository } from '../repositories/afkRepository.js';
+import { InactiveRepository } from '../repositories/inactiveRepository.js';
+import { CarParkRepository } from '../repositories/carParkRepository.js';
 import {
 	createAfkModal,
 	createCarParkModal,
 	createInactiveModal,
-} from '../ui/modals';
-import { safeReply } from '../utils/safeReply';
-import { sendLog } from '../utils/logging';
+} from '../ui/modals.js';
+import { safeReply } from '../utils/safeReply.js';
+import { sendLog } from '../utils/logging.js';
 
-async function handleButton(
+export async function handleButton(
 	i: Interaction,
 	{
 		client,
@@ -143,5 +143,3 @@ async function handleButton(
 
 	return false;
 }
-
-module.exports = { handleButton };

@@ -10,7 +10,7 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from 'discord.js';
-import { Car } from '../types';
+import { Car } from '../types/index.js';
 
 //----------------------------------------------------------------------
 export function createAfkModal() {

@@ -1,14 +1,12 @@
 import { Client, Interaction } from 'discord.js';
-import { ConfigType } from '../config';
-import { AfkRepository } from '../repositories/afkRepository';
-import { InactiveRepository } from '../repositories/inactiveRepository';
-import { CarParkRepository } from '../repositories/carParkRepository';
-
-const { handleButton } = require('./buttons');
-const { handleModal } = require('./modals');
-const { safeReply } = require('../utils/safeReply');
-const { commandMap } = require('../commands');
-const { handleStringSelectMenu } = require('./selectMenu');
+import { ConfigType } from '../config.js';
+import { AfkRepository } from '../repositories/afkRepository.js';
+import { InactiveRepository } from '../repositories/inactiveRepository.js';
+import { CarParkRepository } from '../repositories/carParkRepository.js';
+import { handleStringSelectMenu } from './selectMenu.js';
+import { handleButton } from './buttons.js';
+import { handleModal } from './modals.js';
+import { safeReply } from '../utils/safeReply.js';
 
 interface Deps {
 	client: Client;
@@ -24,7 +22,7 @@ export function createInteractionHandler(deps: Deps) {
 	return async (i: Interaction) => {
 		try {
 			if (i.isChatInputCommand()) {
-				const command = commandMap.get(i.commandName);
+				const command = i.client.commands.get(i.commandName);
 				if (!command || typeof command.execute !== 'function') {
 					return false;
 				}

@@ -1,33 +1,34 @@
-import { ConfigType } from '../config';
+import { ConfigType } from '../../config.js';
 import {
 	ChatInputCommandInteraction,
 	EmbedBuilder,
 	SlashCommandBuilder,
 } from 'discord.js';
-import { safeReply } from '../utils/safeReply';
-import { loadAsync, saveAsync } from '../utils/storage';
+import { safeReply } from '../../utils/safeReply.js';
+import { loadAsync, saveAsync } from '../../utils/storage.js';
+import { Command } from '../../types/Command.js';
 
-export const data = new SlashCommandBuilder()
+const data = new SlashCommandBuilder()
 	.setName('carpanel')
 	.setDescription('Создать панель автопарка');
 
-export type ExecuteOptions = {
+type ExecuteOptions = {
 	config: ConfigType;
 	updateCarParkPanel: () => Promise<void>;
 };
 
-export async function execute(
+async function execute(
 	interaction: ChatInputCommandInteraction,
 	{ config, updateCarParkPanel }: ExecuteOptions,
-): Promise<boolean> {
-	if (!interaction.channel?.isSendable()) return false;
+): Promise<void> {
+	if (!interaction.channel?.isSendable()) return;
 
 	if (interaction.channelId !== config.channels.carpark) {
 		await safeReply(interaction, {
 			content:
 				'❌ Эту команду можно использовать только в канале автопарка.',
 		});
-		return true;
+		return;
 	}
 
 	const msg = await interaction.channel.send({
@@ -52,10 +53,10 @@ export async function execute(
 		content: '✅ Панель создана!',
 	});
 
-	return true;
+	return;
 }
-
-module.exports = {
+const command: Command = {
 	data,
 	execute,
 };
+export default command;

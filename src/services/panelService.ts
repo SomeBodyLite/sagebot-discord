@@ -21,6 +21,7 @@ import {
 	getMskNow,
 	isTomorrow,
 } from '../utils/time.js';
+import Logger from '../utils/logger.js';
 
 //----------------------------------------------------------------------
 // Отрисовка Сообщений с панелями
@@ -38,6 +39,7 @@ export function createPanelService({
 	inactiveRepo: InactiveRepository;
 	carParkRepo: CarParkRepository;
 }) {
+	const logger = new Logger('Create Panel Service');
 	async function updatePanel({
 		panelKey,
 		buildEmbed,
@@ -64,8 +66,9 @@ export function createPanelService({
 			await message.edit({ embeds: [embed], components: [row] });
 		} catch (e) {
 			if (e instanceof Error) {
-				console.log(`${panelKey} Panel update error:`, e?.message);
-				console.error(e);
+				logger.error(`${panelKey} Panel update error: ${e?.message}`);
+			} else {
+				logger.error(`${panelKey} Panel update error: ${e}`);
 			}
 		}
 	}

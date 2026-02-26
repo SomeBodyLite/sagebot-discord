@@ -10,7 +10,11 @@ import { createInactiveRepository } from './repositories/inactiveRepository.js';
 import { createCarParkRepository } from './repositories/carParkRepository.js';
 import { registerGuildCommands } from './services/commandRegistry.js';
 import { loadCommands } from './commands/index.js';
+import Logger from './utils/logger.js';
 
+//
+// Создание логгера
+const logger = new Logger();
 //
 // Создание клиента
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -56,7 +60,7 @@ client.on(
 );
 
 client.once('clientReady', () => {
-	console.log(`${client.user?.tag} готов.`);
+	logger.succes(`${client.user?.tag} готов.`);
 
 	setInterval(async () => {
 		const data = await afkRepo.getAll();
@@ -113,9 +117,8 @@ client.once('clientReady', () => {
 					);
 				} catch (e) {
 					if (e instanceof Error) {
-						console.log(
-							`Не удалось отправить DM пользователю ${car.who_take}:`,
-							e.message,
+						logger.error(
+							`Не удалось отправить DM пользователю ${car.who_take}: ${e.message}`,
 						);
 					}
 				}

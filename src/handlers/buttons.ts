@@ -10,6 +10,7 @@ import {
 } from '../ui/modals.js';
 import { safeReply } from '../utils/safeReply.js';
 import { sendLog } from '../utils/logging.js';
+import Logger from '../utils/logger.js';
 
 export async function handleButton(
 	i: Interaction,
@@ -133,11 +134,6 @@ export async function handleButton(
 				return await safeReply(i, {
 					content: 'Вы освободили автомобиль',
 				});
-
-			default:
-				console.log('error');
-				await updateCarParkPanel();
-				return false;
 		}
 	}
 

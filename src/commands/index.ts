@@ -3,15 +3,17 @@ import path from 'path';
 import { pathToFileURL } from 'url';
 import { Command } from '../types/Command.js';
 import { Client, Collection } from 'discord.js';
+import Logger from '../utils/logger.js';
 
 export async function loadCommands(client: Client) {
+	const logger = new Logger('Commands Loader');
 	client.commands = new Collection();
 
-	const commandsPath = path.join(import.meta.dirname, ''); // src/commands
+	const commandsPath = path.join(import.meta.dirname, '');
 	const entries = fs.readdirSync(commandsPath, { withFileTypes: true });
 
 	for (const entry of entries) {
-		if (!entry.isDirectory()) continue; // пропускаем файлы
+		if (!entry.isDirectory()) continue;
 
 		let commandFiles: string[] = [];
 
@@ -28,11 +30,11 @@ export async function loadCommands(client: Client) {
 
 			const fileUrl = pathToFileURL(file).href;
 			const command: Command = (await import(fileUrl)).default;
-			console.log('Add command: ' + command.data.name);
+			logger.info(`Add command: ${command.data.name}`);
 
 			client.commands.set(command.data.name, command);
 		}
 	}
 
-	console.log(`Added ${client.commands.size} commands`);
+	logger.succes(`Added ${client.commands.size} commands`);
 }

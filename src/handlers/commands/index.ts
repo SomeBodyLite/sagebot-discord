@@ -8,6 +8,7 @@ import { Command } from '@/types/Command.js';
 
 export async function loadCommands() {
 	const logger = new Logger('Commands Loader');
+	logger.info('Start load commands');
 	client.commands = new Collection();
 
 	const commandsPath = path.join(import.meta.dirname, '');

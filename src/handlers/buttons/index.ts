@@ -9,6 +9,7 @@ import { Collection, Interaction } from 'discord.js';
 
 export async function loadButtons() {
 	const logger = new Logger('Buttons Loader');
+	logger.info('Start load buttons');
 	client.buttons = new Collection<string, ButtonHandler>();
 
 	const buttonsPath = path.join(import.meta.dirname, '');

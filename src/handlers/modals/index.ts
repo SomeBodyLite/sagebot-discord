@@ -10,6 +10,7 @@ import { pathToFileURL } from 'url';
 
 export async function loadModals() {
 	const logger = new Logger('Modals Loader');
+	logger.info('Start load modals');
 	client.modals = new Collection<string, ModalHandler>();
 
 	const modalPath = path.join(import.meta.dirname, '');

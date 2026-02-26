@@ -1,4 +1,4 @@
-import { createAfkModal } from '@/ui/modals.js';
+import { createAfkModal } from '@/ui/modals/afk.js';
 import { ButtonInteraction } from 'discord.js';
 
 async function execute(i: ButtonInteraction) {

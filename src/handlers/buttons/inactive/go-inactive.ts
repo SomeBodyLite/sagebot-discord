@@ -1,4 +1,4 @@
-import { createInactiveModal } from '@/ui/modals.js';
+import { createInactiveModal } from '@/ui/modals/inactive.js';
 import { ButtonInteraction } from 'discord.js';
 
 async function execute(i: ButtonInteraction) {

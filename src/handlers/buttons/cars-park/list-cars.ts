@@ -1,7 +1,7 @@
 import { ButtonInteraction, GuildMember } from 'discord.js';
 import { safeReply } from '@/utils/safeReply.js';
 import { carParkRepository } from '@/repositories/carParkRepository.js';
-import { createCarParkModal } from '@/ui/modals.js';
+import { createCarParkModal } from '@/ui/modals/car-park.js';
 
 async function execute(i: ButtonInteraction) {
 	const allCars = await carParkRepository.getAll();

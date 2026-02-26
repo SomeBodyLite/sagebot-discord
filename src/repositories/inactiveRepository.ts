@@ -1,36 +1,38 @@
+import { config } from '../config.js';
+import { InactiveUserInfo } from '../types/index.js';
 import { loadAsync, saveAsync } from '../utils/storage.js';
 
-export interface InactiveRepository {
-	getAll: () => {};
-	get: (userId: string) => {};
-	has: (userId: string) => {};
-	set: (userId: string, entry: {}) => {};
-	remove: (userId: string) => {};
+interface InactiveRepositoryInterface {
+	getAll: () => Promise<Record<string, InactiveUserInfo>>;
+	get: (userId: string) => Promise<InactiveUserInfo>;
+	has: (userId: string) => Promise<boolean>;
+	set: (userId: string, entry: InactiveUserInfo) => Promise<InactiveUserInfo>;
+	remove: (userId: string) => Promise<boolean>;
 }
-export function createInactiveRepository(filePath: string): InactiveRepository {
-	return {
-		async getAll() {
-			return loadAsync(filePath);
-		},
-		async get(userId) {
-			const data = await loadAsync(filePath);
-			return data[userId];
-		},
-		async has(userId) {
-			return Boolean(await this.get(userId));
-		},
-		async set(userId, entry) {
-			const data = await loadAsync(filePath);
-			data[userId] = entry;
-			await saveAsync(filePath, data);
-			return entry;
-		},
-		async remove(userId) {
-			const data = await loadAsync(filePath);
-			const existed = Boolean(data[userId]);
-			delete data[userId];
-			await saveAsync(filePath, data);
-			return existed;
-		},
-	};
+export class InactiveRepository implements InactiveRepositoryInterface {
+	private readonly pathToRepository = config.files.inactive;
+	async getAll() {
+		return loadAsync(this.pathToRepository);
+	}
+	async get(userId: string) {
+		const data = await loadAsync(this.pathToRepository);
+		return data[userId];
+	}
+	async has(userId: string) {
+		return Boolean(await this.get(userId));
+	}
+	async set(userId: string, entry: InactiveUserInfo) {
+		const data = await loadAsync(this.pathToRepository);
+		data[userId] = entry;
+		await saveAsync(this.pathToRepository, data);
+		return entry;
+	}
+	async remove(userId: string) {
+		const data = await loadAsync(this.pathToRepository);
+		const existed = Boolean(data[userId]);
+		delete data[userId];
+		await saveAsync(this.pathToRepository, data);
+		return existed;
+	}
 }
+export const inactiveRepository = new InactiveRepository();

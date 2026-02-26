@@ -1,10 +1,5 @@
+import { safeReply } from '@/utils/safeReply.js';
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { safeReply } from '../../utils/safeReply.js';
-import { Command } from '../../types/Command.js';
-
-const data = new SlashCommandBuilder()
-	.setName('ping')
-	.setDescription('Тест работоспособности');
 
 async function execute(
 	interaction: ChatInputCommandInteraction,
@@ -17,8 +12,9 @@ async function execute(
 
 	return;
 }
-const command: Command = {
-	data,
+export default {
+	data: new SlashCommandBuilder()
+		.setName('ping')
+		.setDescription('Тест работоспособности'),
 	execute,
 };
-export default command;

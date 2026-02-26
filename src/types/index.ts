@@ -11,7 +11,7 @@ export type AfkUserInfo = {
 	reason: string;
 	location: string;
 	time: string;
-	until: 1771765200000;
+	until: number;
 };
 
 export type InactiveUserInfo = {

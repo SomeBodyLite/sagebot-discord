@@ -1,24 +1,15 @@
+import { config } from '@/config.js';
+import { updateInactivePanel } from '@/ui/panels/inactive.js';
+import { safeReply } from '@/utils/safeReply.js';
+import { loadAsync, saveAsync } from '@/utils/storage.js';
 import {
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
 	EmbedBuilder,
 } from 'discord.js';
-import { config, ConfigType } from '../../config.js';
-import { loadAsync, saveAsync } from '../../utils/storage.js';
-import { safeReply } from '../../utils/safeReply.js';
-import { Command } from '../../types/Command.js';
-
-const data = new SlashCommandBuilder()
-	.setName('inactivepanel')
-	.setDescription('Создать панель инактива');
-
-type ExecuteOptions = {
-	updateInactivePanel: () => Promise<void>;
-};
 
 async function execute(
 	interaction: ChatInputCommandInteraction,
-	{ updateInactivePanel }: ExecuteOptions,
 ): Promise<void> {
 	if (!interaction.channel?.isSendable()) return;
 
@@ -55,8 +46,9 @@ async function execute(
 
 	return;
 }
-const command: Command = {
-	data,
+export default {
+	data: new SlashCommandBuilder()
+		.setName('inactivepanel')
+		.setDescription('Создать панель инактива'),
 	execute,
 };
-export default command;

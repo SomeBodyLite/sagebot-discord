@@ -1,25 +1,22 @@
-import { ConfigType } from '../../config.js';
+import { config } from '@/config.js';
+import { updateCarParkPanel } from '@/ui/panels/car-park.js';
+import { safeReply } from '@/utils/safeReply.js';
+import { loadAsync, saveAsync } from '@/utils/storage.js';
 import {
 	ChatInputCommandInteraction,
 	EmbedBuilder,
 	SlashCommandBuilder,
 } from 'discord.js';
-import { safeReply } from '../../utils/safeReply.js';
-import { loadAsync, saveAsync } from '../../utils/storage.js';
-import { Command } from '../../types/Command.js';
 
-const data = new SlashCommandBuilder()
-	.setName('carpanel')
-	.setDescription('Создать панель автопарка');
-
-type ExecuteOptions = {
-	config: ConfigType;
-	updateCarParkPanel: () => Promise<void>;
+export default {
+	data: new SlashCommandBuilder()
+		.setName('carpanel')
+		.setDescription('Создать панель автопарка'),
+	execute,
 };
 
 async function execute(
 	interaction: ChatInputCommandInteraction,
-	{ config, updateCarParkPanel }: ExecuteOptions,
 ): Promise<void> {
 	if (!interaction.channel?.isSendable()) return;
 
@@ -55,8 +52,3 @@ async function execute(
 
 	return;
 }
-const command: Command = {
-	data,
-	execute,
-};
-export default command;

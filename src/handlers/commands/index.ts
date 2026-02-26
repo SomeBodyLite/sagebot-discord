@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { Command } from '../types/Command.js';
-import { Client, Collection } from 'discord.js';
-import Logger from '../utils/logger.js';
+import { ChatInputCommandInteraction, Collection } from 'discord.js';
+import Logger from '@/utils/logger.js';
+import { client } from '@/index.js';
+import { Command } from '@/types/Command.js';
 
-export async function loadCommands(client: Client) {
+export async function loadCommands() {
 	const logger = new Logger('Commands Loader');
 	client.commands = new Collection();
 
@@ -37,4 +38,14 @@ export async function loadCommands(client: Client) {
 	}
 
 	logger.succes(`Added ${client.commands.size} commands`);
+}
+
+export async function handleCommand(i: ChatInputCommandInteraction) {
+	if (!i.isChatInputCommand) return;
+	const command = client.commands.get(i.commandName);
+	if (!command || typeof command.execute !== 'function') {
+		return false;
+	}
+	await command.execute(i);
+	return true;
 }

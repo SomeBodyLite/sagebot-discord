@@ -1,69 +1,28 @@
 import 'dotenv/config';
-
 import { Client, GatewayIntentBits } from 'discord.js';
 import { sendLog } from './utils/logging.js';
-import { config, TOKEN } from './config.js';
+import { config, token } from './config.js';
 import { createInteractionHandler } from './handlers/interactionCreate.js';
-import { createPanelService } from './services/panelService.js';
-import { createAfkRepository } from './repositories/afkRepository.js';
-import { createInactiveRepository } from './repositories/inactiveRepository.js';
-import { createCarParkRepository } from './repositories/carParkRepository.js';
 import { registerGuildCommands } from './services/commandRegistry.js';
-import { loadCommands } from './commands/index.js';
 import Logger from './utils/logger.js';
+import { afkRepository, carParkRepository } from './repositories/index.js';
+import { updateCarParkPanel } from './ui/panels/car-park.js';
+import { updateAfkPanel } from './ui/panels/afk.js';
+import loadModules from './services/loadModules.js';
 
-//
-// Создание логгера
 const logger = new Logger();
-//
-// Создание клиента
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-//
-// Создание репозиториев и подключение хранилищ
-const afkRepo = createAfkRepository(config.files.afk);
-const inactiveRepo = createInactiveRepository(config.files.inactive);
-const carParkRepo = createCarParkRepository(config.files.carpark);
+export const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-//
-// Сервис обновления/отрисовки панелей
-const panelService = createPanelService({
-	client,
-	config,
-	afkRepo,
-	inactiveRepo,
-	carParkRepo,
-});
-const { updateAfkPanel, updateInactivePanel, updateCarParkPanel } =
-	panelService;
+await loadModules();
+await registerGuildCommands();
 
-// ================= REGISTRATION =================
-await loadCommands(client);
-await registerGuildCommands({
-	clientId: process.env.CLIENT_ID,
-	guildId: process.env.GUILD_ID,
-	client,
-});
-// ================= HANDLERS =================
-
-client.on(
-	'interactionCreate',
-	createInteractionHandler({
-		client,
-		config,
-		afkRepo,
-		inactiveRepo,
-		carParkRepo,
-		updateAfkPanel,
-		updateInactivePanel,
-		updateCarParkPanel,
-	}),
-);
+client.on('interactionCreate', createInteractionHandler());
 
 client.once('clientReady', () => {
 	logger.succes(`${client.user?.tag} готов.`);
 
 	setInterval(async () => {
-		const data = await afkRepo.getAll();
+		const data = await afkRepository.getAll();
 		const now = Date.now();
 		let changed = false;
 
@@ -75,7 +34,7 @@ client.once('clientReady', () => {
 					`⏰ <@${userId}> автоматически вышел из АФК (время истекло).\n┕ Оставлял перса: **${data[userId].location}**`,
 				);
 
-				await afkRepo.remove(userId);
+				await afkRepository.remove(userId);
 				changed = true;
 			}
 		}
@@ -86,7 +45,7 @@ client.once('clientReady', () => {
 	}, 60000);
 
 	setInterval(async () => {
-		const cars = await carParkRepo.getAll();
+		const cars = await carParkRepository.getAll();
 		const now = Date.now();
 		let changed = false;
 
@@ -96,7 +55,7 @@ client.once('clientReady', () => {
 			const releaseTime = car.taked_At + TWO_HOURS;
 
 			if (now >= releaseTime) {
-				await carParkRepo.update(car.id, {
+				await carParkRepository.update(car.id, {
 					...car,
 					who_take: null,
 					taked_At: null,
@@ -133,4 +92,4 @@ client.once('clientReady', () => {
 	}, 6000);
 });
 
-client.login(TOKEN);
+client.login(token);

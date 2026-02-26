@@ -3,23 +3,20 @@ import {
 	EmbedBuilder,
 	SlashCommandBuilder,
 } from 'discord.js';
-import { ConfigType } from '../../config.js';
-import { safeReply } from '../../utils/safeReply.js';
-import { loadAsync, saveAsync } from '../../utils/storage.js';
-import { Command } from '../../types/Command.js';
+import { config } from '@/config.js';
+import { updateAfkPanel } from '@/ui/panels/afk.js';
+import { safeReply } from '@/utils/safeReply.js';
+import { loadAsync, saveAsync } from '@/utils/storage.js';
 
-const data = new SlashCommandBuilder()
-	.setName('afkpanel')
-	.setDescription('Создать панель АФК');
-
-type ExecuteOptions = {
-	config: ConfigType;
-	updateAfkPanel: () => Promise<void>;
+export default {
+	data: new SlashCommandBuilder()
+		.setName('afkpanel')
+		.setDescription('Создать панель АФК'),
+	execute,
 };
 
 async function execute(
 	interaction: ChatInputCommandInteraction,
-	{ config, updateAfkPanel }: ExecuteOptions,
 ): Promise<void> {
 	if (!interaction.channel?.isSendable()) return;
 	if (interaction.channelId !== config.channels.afkPanel) {
@@ -50,12 +47,4 @@ async function execute(
 	await safeReply(interaction, {
 		content: '✅ Панель создана!',
 	});
-
-	return;
 }
-
-const command: Command = {
-	data,
-	execute,
-};
-export default command;

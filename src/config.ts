@@ -22,7 +22,9 @@ function getEnv(name: string): string {
 	return value;
 }
 
-export const TOKEN = getEnv('TOKEN');
+export const token = getEnv('TOKEN');
+export const clientId = getEnv('clientId');
+export const guildId = getEnv('GUILD_ID');
 
 const BANNER_URL = 'https://i.ibb.co/RdZ7SXt/photo-2025-11-12-00-31-24.jpg';
 

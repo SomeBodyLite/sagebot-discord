@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { sendLog } from './utils/logging.js';
-import { config, token } from './config.js';
+import { config } from './config.js';
 import { createInteractionHandler } from './handlers/interactionCreate.js';
 import Logger from './utils/logger.js';
 import { afkRepository, carParkRepository } from './repositories/index.js';
@@ -91,7 +91,7 @@ async function main() {
 		}, 6000);
 	});
 
-	client.login(token);
+	client.login(config.token);
 }
 
 main().catch(console.error);

@@ -1,24 +1,27 @@
 import { REST, Routes } from 'discord.js';
 import Logger from '../utils/logger.js';
-import { clientId, guildId, token } from '../config.js';
+import { config } from '../config.js';
 import { client } from '../index.js';
 
 export async function registerGuildCommands() {
 	const logger = new Logger('Commands Registrator');
-	if (!token || !clientId || !guildId) {
+	if (!config.token || !config.clientId || !config.guildId) {
 		logger.error(`Не достаточно данных для регистрации команд!`);
 		logger.info(
-			`\nTOKEN : ${token}\nclientId : ${clientId}\nguildId : ${guildId}\n`,
+			`\nTOKEN : ${config.token}\nclientId : ${config.clientId}\nguildId : ${config.guildId}\n`,
 		);
 		throw new Error();
 	}
-	const rest = new REST({ version: '10' }).setToken(token);
+	const rest = new REST({ version: '10' }).setToken(config.token);
 	const commandData = client.commands.map((cmd) => cmd.data.toJSON());
 
 	try {
-		await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-			body: commandData,
-		});
+		await rest.put(
+			Routes.applicationGuildCommands(config.clientId, config.guildId),
+			{
+				body: commandData,
+			},
+		);
 		logger.succes('Commands registered!');
 	} catch (e) {
 		logger.error(`Command registration error: ${e}`);

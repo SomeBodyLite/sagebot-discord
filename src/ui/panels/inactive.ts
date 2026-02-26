@@ -27,7 +27,7 @@ export async function buildInactiveEmbed() {
 	return new EmbedBuilder()
 		.setTitle('📅 Список инактива')
 		.setColor(0x5865f2)
-		.setImage(config.BANNER_URL)
+		.setImage(config.bannerUrl)
 		.setDescription(description);
 }
 

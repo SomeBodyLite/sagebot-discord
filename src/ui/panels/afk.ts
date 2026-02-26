@@ -39,7 +39,7 @@ async function buildAfkEmbed(): Promise<EmbedBuilder> {
 			`🕒 Люди в АФК | состояние на ${formatMskTime(getMskNow())} МСК`,
 		)
 		.setColor(0xaa0000)
-		.setImage(config.BANNER_URL)
+		.setImage(config.bannerUrl)
 		.setDescription(description);
 }
 

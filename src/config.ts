@@ -22,27 +22,17 @@ function getEnv(name: string): string {
 	return value;
 }
 
-export const token = getEnv('TOKEN');
-export const clientId = getEnv('CLIENT_ID');
-export const guildId = getEnv('GUILD_ID');
-
-const BANNER_URL = 'https://i.ibb.co/RdZ7SXt/photo-2025-11-12-00-31-24.jpg';
-
-const AFK_LOG_CHANNEL_ID = '1475560132434723064';
-const INACTIVE_LOG_CHANNEL_ID = '1475560298839801856';
-
-const AFK_PANEL_CHANNEL_ID = '1475560107143073874';
-const INACTIVE_PANEL_CHANNEL_ID = '1475560177842524250';
-
-const CAR_PANEL_CHANNEL_ID = '1476157716442386452';
-export interface ConfigType {
+interface ConfigType {
+	token: string;
+	clientId: string;
+	guildId: string;
 	files: {
 		afk: string;
 		inactive: string;
 		panels: string;
 		carpark: string;
 	};
-	BANNER_URL: string;
+	bannerUrl: string;
 	channels: {
 		afkLog: string;
 		inactiveLog: string;
@@ -53,19 +43,22 @@ export interface ConfigType {
 	};
 }
 export const config: ConfigType = {
+	token: getEnv('TOKEN'),
+	clientId: getEnv('CLIENT_ID'),
+	guildId: getEnv('GUILD_ID'),
 	files: {
 		afk: DATA_FILE,
 		inactive: INACTIVE_DATA_FILE,
 		panels: PANEL_FILE,
 		carpark: CARPARK_FILE,
 	},
-	BANNER_URL,
+	bannerUrl: getEnv('BANNER_URL'),
 	channels: {
-		afkLog: AFK_LOG_CHANNEL_ID,
-		inactiveLog: INACTIVE_LOG_CHANNEL_ID,
-		afkPanel: AFK_PANEL_CHANNEL_ID,
-		inactivePanel: INACTIVE_PANEL_CHANNEL_ID,
-		carpark: CAR_PANEL_CHANNEL_ID,
-		carparkLog: CAR_PANEL_CHANNEL_ID,
+		afkLog: getEnv('AFK_LOG_CHANNEL_ID'),
+		inactiveLog: getEnv('INACTIVE_LOG_CHANNEL_ID'),
+		afkPanel: getEnv('AFK_PANEL_CHANNEL_ID'),
+		inactivePanel: getEnv('INACTIVE_PANEL_CHANNEL_ID'),
+		carpark: getEnv('CAR_PANEL_CHANNEL_ID'),
+		carparkLog: getEnv('CAR_LOG_CHANNEL_ID'),
 	},
 };

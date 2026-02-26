@@ -5,6 +5,7 @@ import { ChatInputCommandInteraction, Collection } from 'discord.js';
 import Logger from '@/utils/logger.js';
 import { client } from '@/index.js';
 import { Command } from '@/types/Command.js';
+import { registerGuildCommands } from '@/services/commandRegistry.js';
 
 export async function loadCommands() {
 	const logger = new Logger('Commands Loader');
@@ -39,6 +40,7 @@ export async function loadCommands() {
 	}
 
 	logger.succes(`Added ${client.commands.size} commands`);
+	await registerGuildCommands();
 }
 
 export async function handleCommand(i: ChatInputCommandInteraction) {

@@ -19,7 +19,7 @@ export async function registerGuildCommands() {
 		await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
 			body: commandData,
 		});
-		logger.succes('Commands registrate!');
+		logger.succes('Commands registered!');
 	} catch (e) {
 		logger.error(`Command registration error: ${e}`);
 	}

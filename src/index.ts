@@ -3,7 +3,6 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { sendLog } from './utils/logging.js';
 import { config, token } from './config.js';
 import { createInteractionHandler } from './handlers/interactionCreate.js';
-import { registerGuildCommands } from './services/commandRegistry.js';
 import Logger from './utils/logger.js';
 import { afkRepository, carParkRepository } from './repositories/index.js';
 import { updateCarParkPanel } from './ui/panels/car-park.js';
@@ -15,7 +14,6 @@ export const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 async function main() {
 	await loadModules();
-	await registerGuildCommands();
 
 	client.on('interactionCreate', createInteractionHandler());
 

@@ -23,7 +23,7 @@ async function execute(
 ): Promise<void> {
 	if (!interaction.channel?.isSendable()) return;
 
-	if (interaction.channelId !== config.channels.carpark) {
+	if (interaction.channelId !== config.channels.carparkAdmin) {
 		await safeReply(interaction, {
 			content:
 				'❌ Эту команду можно использовать только в канале администратора.',

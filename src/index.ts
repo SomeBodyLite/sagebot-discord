@@ -50,8 +50,8 @@ async function main() {
 
 			for (const car of cars) {
 				if (!car.taked_At || !car.who_take) continue;
-				const TWO_HOURS = 2 * 60 * 60 * 1000;
-				const releaseTime = car.taked_At + TWO_HOURS;
+				const THREE_HOURS = 3 * 60 * 60 * 1000;
+				const releaseTime = car.taked_At + THREE_HOURS;
 
 				if (now >= releaseTime) {
 					await carParkRepository.update(car.id, {
@@ -63,7 +63,7 @@ async function main() {
 					try {
 						const user = await client.users.fetch(car.who_take);
 						user.send(
-							'Автомобиль был особожден по истечении 2х часов!',
+							'Автомобиль был особожден по истечении 3х часов!',
 						);
 						sendLog(
 							client,

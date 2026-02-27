@@ -5,9 +5,11 @@ import { loadAsync, saveAsync } from '../utils/storage.js';
 interface CarParkRepositoryInterface {
 	getAll: () => Promise<Car[]>;
 	get: (id: string) => Promise<Car | undefined>;
+	getByNumber: (number: string) => Promise<Car | undefined>;
 	getAllFree: () => Promise<Car[]>;
 	update: (id: string, entry: Car) => Promise<void>;
-	remove: (id: string) => Promise<void>;
+	remove: (id: string) => Promise<Car | undefined>;
+	create: (car: Car) => Promise<Car>;
 }
 
 class CarParkRepository implements CarParkRepositoryInterface {
@@ -18,6 +20,10 @@ class CarParkRepository implements CarParkRepositoryInterface {
 	async get(id: string) {
 		const data: Car[] = await loadAsync(this.pathToRepository);
 		return data.find((element) => element.id === id);
+	}
+	async getByNumber(number: string) {
+		const data: Car[] = await loadAsync(this.pathToRepository);
+		return data.find((element) => element.number === number);
 	}
 	async getAllFree() {
 		const data: Car[] = await loadAsync(this.pathToRepository);
@@ -42,11 +48,29 @@ class CarParkRepository implements CarParkRepositoryInterface {
 
 		return;
 	}
+
 	async remove(id: string) {
-		const data = await loadAsync(this.pathToRepository);
-		delete data[id];
+		const data: Car[] = await loadAsync(this.pathToRepository);
+		const deletedCar = await this.get(id);
+		const filtered = data.filter((car) => car.id !== id);
+		await saveAsync(this.pathToRepository, filtered);
+		return deletedCar;
+	}
+
+	async create(car: Car) {
+		const data: Car[] = await loadAsync(this.pathToRepository);
+		const existedCar = await this.getByNumber(car.number);
+		if (existedCar) {
+			throw new Error(`Машина с номером ${existedCar.number} уже есть`);
+		}
+		const lastCarId = data[data.length - 1].id;
+		car = {
+			...car,
+			id: (Number(lastCarId) + 1).toString(),
+		};
+		data.push(car);
 		await saveAsync(this.pathToRepository, data);
-		return;
+		return car;
 	}
 }
 export const carParkRepository = new CarParkRepository();

@@ -34,22 +34,21 @@ function buildCarParkRow() {
 			label: 'Создать',
 			style: ButtonStyle.Success,
 		}),
-
 		new ButtonBuilder({
 			customId: 'admin_delete_car',
 			label: 'Удалить',
 			style: ButtonStyle.Danger,
 		}),
 		new ButtonBuilder({
-			customId: 'admin_delete_car',
-			label: 'Удалить',
-			style: ButtonStyle.Danger,
+			customId: 'admin_change_car',
+			label: 'Изменить',
+			style: ButtonStyle.Secondary,
 		}),
 	);
 }
 export async function updateAdminCarParkPanel() {
 	return updatePanel({
-		panelKey: 'carpark_admin',
+		panelKey: 'carparkAdmin',
 		buildEmbed: buildCarParkEmbed,
 		buildRow: buildCarParkRow,
 	});

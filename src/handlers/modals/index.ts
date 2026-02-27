@@ -41,7 +41,8 @@ export async function handleModal(i: Interaction) {
 	const logger = new Logger('Modal Handler');
 	if (!i.isModalSubmit()) return;
 
-	const modal = client.modals.get(i.customId);
+	const splitedId = i.customId.split(':');
+	const modal = client.modals.get(splitedId[0]);
 	if (!modal) return;
 
 	try {

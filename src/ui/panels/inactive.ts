@@ -2,9 +2,11 @@ import { inactiveRepository } from '@/repositories/inactiveRepository.js';
 import { InactiveUserInfo } from '@/types/index.js';
 import {
 	ActionRowBuilder,
+	bold,
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
+	quote,
 } from 'discord.js';
 import { updatePanel } from './utils.js';
 import { config } from '@/config.js';
@@ -20,7 +22,10 @@ export async function buildInactiveEmbed() {
 				users
 					.map(
 						([id, info], idx) =>
-							`${idx + 1}) <@${id}> - Причина: "${info.reason}" - Вернусь: **${info.date}**`,
+							`${idx + 1}. <@${id}>
+						${quote(`Причина: ${bold(info.reason)}`)} 
+						${quote(`До: ${bold(info.date)}`)}
+					`,
 					)
 					.join('\n');
 

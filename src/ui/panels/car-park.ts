@@ -14,11 +14,18 @@ export async function buildCarParkEmbed() {
 	const description = data
 		.map((carData) => {
 			if (carData.who_take) {
-				// return `🔴 ${carData.number} **| ${carData.name} |** **Занял**: <@${carData.who_take}>`;
-				return `🔴 ${inlineCode(carData.number)} **| ${carData.name} |** Занял: <@${carData.who_take}>`;
-				
+				const diffMs =
+					3 * 60 * 60 * 1000 - (Date.now() - carData.taked_At!);
+				const diffMinutes = Math.floor(diffMs / 1000 / 60);
+				const hours = Math.floor(diffMinutes / 60);
+				const minutes = diffMinutes % 60;
+				const time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
+				return `🔴 ${inlineCode(carData.number)} **| ${carData.name}**
+         > Занял: <@${carData.who_take}> 
+				 > Осталось: ${time}`;
 			} else {
-				return `🟢 ${inlineCode(carData.number)} **| ${carData.name} |**`;
+				return `🟢 ${inlineCode(carData.number)} **| ${carData.name}**`;
 			}
 		})
 		.join('\n');

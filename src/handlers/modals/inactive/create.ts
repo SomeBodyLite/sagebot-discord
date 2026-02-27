@@ -12,8 +12,7 @@ async function execute(i: ModalSubmitInteraction) {
 	const date = i.fields.getTextInputValue('date').trim();
 	if (!isValidDate(date)) {
 		await safeReply(i, {
-			content:
-				'Используйте формат даты: ДД.ММ.ГГГГ (например 30.11.2026)',
+			content: 'Некорректная дата!',
 		});
 		return true;
 	}

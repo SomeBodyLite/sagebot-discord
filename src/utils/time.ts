@@ -1,8 +1,8 @@
-export function isValidTime(time:string) {
+export function isValidTime(time: string) {
 	return /^([01]\d|2[0-3]):([0-5]\d)$/.test(time);
 }
 
-export function isValidDateStrict(date:string) {
+function isValidDateStrict(date: string): boolean {
 	if (!/^\d{2}\.\d{2}\.\d{4}$/.test(date)) return false;
 
 	const [dd, mm, yyyy] = date.split('.').map(Number);
@@ -20,20 +20,29 @@ export function isValidDateStrict(date:string) {
 }
 
 export function isValidDate(date: string) {
-	return isValidDateStrict(date);
+	if (!isValidDateStrict(date)) return false;
+	const [dd, mm, yyyy] = date.split('.').map(Number);
+
+	const inputDate = new Date(yyyy, mm - 1, dd);
+	inputDate.setHours(0, 0, 0, 0);
+
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+
+	return inputDate.getTime() > today.getTime();
 }
 
 export function getMskNow() {
 	return new Date();
 }
-export function formatMskTime(date:Date) {
+export function formatMskTime(date: Date) {
 	return date.toLocaleTimeString('ru-RU', {
 		timeZone: 'Europe/Moscow',
 		hour: '2-digit',
 		minute: '2-digit',
 	});
 }
-export function isTomorrow(timestamp:number) {
+export function isTomorrow(timestamp: number) {
 	const now = new Date(
 		new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }),
 	);
@@ -47,7 +56,7 @@ export function isTomorrow(timestamp:number) {
 
 	return targetDay !== nowDay;
 }
-export function formatMskDateTime(date:Date) {
+export function formatMskDateTime(date: Date) {
 	return date.toLocaleString('ru-RU', {
 		timeZone: 'Europe/Moscow',
 		day: '2-digit',
@@ -58,7 +67,7 @@ export function formatMskDateTime(date:Date) {
 	});
 }
 
-export function convertMskTimeToNextTimestamp(timeStr:string) {
+export function convertMskTimeToNextTimestamp(timeStr: string) {
 	const now = new Date();
 
 	const mskNow = new Date(
@@ -77,4 +86,3 @@ export function convertMskTimeToNextTimestamp(timeStr:string) {
 
 	return target.getTime();
 }
-

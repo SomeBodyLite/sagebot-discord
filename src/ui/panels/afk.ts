@@ -3,6 +3,10 @@ import {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
+	quote,
+	bold,
+	codeBlock,
+	inlineCode,
 } from 'discord.js';
 import { updatePanel } from './utils.js';
 import { afkRepository } from '@/repositories/afkRepository.js';
@@ -30,7 +34,11 @@ async function buildAfkEmbed(): Promise<EmbedBuilder> {
 							? formatMskDateTime(returnDate)
 							: formatMskTime(returnDate);
 
-						return `${idx + 1}) <@${id}> — Причина: **${info.reason}** | Где: **${info.location}** | Вернусь: **${returnText} МСК**`;
+						return `${idx + 1}. <@${id}>
+						${quote(`Причина: ${bold(info.reason)}`)} 
+						${quote(`Где: ${bold(info.location)}`)}
+						${quote(`Вернусь: ${bold(returnText)} МСК`)}
+					`;
 					})
 					.join('\n');
 

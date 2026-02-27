@@ -8,6 +8,7 @@ import { afkRepository, carParkRepository } from './repositories/index.js';
 import { updateCarParkPanel } from './ui/panels/car-park.js';
 import { updateAfkPanel } from './ui/panels/afk.js';
 import loadModules from './services/loadModules.js';
+import { updateInactivePanel } from './ui/panels/inactive.js';
 
 const logger = new Logger();
 export const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -19,7 +20,8 @@ async function main() {
 
 	client.once('clientReady', () => {
 		logger.succes(`${client.user?.tag} готов.`);
-
+		updateInactivePanel();
+		updateAfkPanel();
 		setInterval(async () => {
 			const data = await afkRepository.getAll();
 			const now = Date.now();
@@ -85,10 +87,8 @@ async function main() {
 				}
 			}
 
-			if (changed) {
-				await updateCarParkPanel();
-			}
-		}, 6000);
+			await updateCarParkPanel();
+		}, 60000);
 	});
 
 	client.login(config.token);

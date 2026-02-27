@@ -15,6 +15,14 @@ async function execute(i: ModalSubmitInteraction) {
 	const carId = selectField.values[0];
 	let car = await carParkRepository.get(carId);
 	if (!car) return;
+
+	if (car.taked_At || car.who_take) {
+		await safeReply(i, {
+			content: `Автомобиль уже занят, возьмите другой`,
+		});
+		return;
+	}
+
 	const now = Date.now();
 	car = {
 		...car,

@@ -22,6 +22,12 @@ async function execute(i: ButtonInteraction) {
 	const filteredCarList = freeCarsList.filter((car) =>
 		car.roles.some((roleName) => rolesSet.has(roles[roleName])),
 	);
+	if (filteredCarList.length === 0) {
+		await safeReply(i, {
+			content: 'Сейчас нет свободных автомобилей :(',
+		});
+		return;
+	}
 	await i.showModal(createCarParkModal(filteredCarList));
 }
 

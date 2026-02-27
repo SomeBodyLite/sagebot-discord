@@ -20,7 +20,7 @@ export async function updatePanel({
 	const panels = await loadAsync(config.files.panels);
 	const meta = panels[panelKey];
 	if (!meta?.channelId || !meta?.messageId) {
-		console.error('нет channelId или messageId');
+		logger.error('нет channelId или messageId');
 		return;
 	}
 

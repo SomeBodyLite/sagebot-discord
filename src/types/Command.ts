@@ -1,4 +1,5 @@
 import {
+	AnySelectMenuInteraction,
 	ButtonInteraction,
 	ChatInputCommandInteraction,
 	ModalSubmitInteraction,
@@ -19,4 +20,8 @@ export interface ButtonHandler {
 export interface ModalHandler {
 	id: string;
 	execute: (interaction: ModalSubmitInteraction) => Promise<void>;
+}
+export interface SelectHandler {
+	id: string;
+	execute: (interaction: AnySelectMenuInteraction) => Promise<void>;
 }

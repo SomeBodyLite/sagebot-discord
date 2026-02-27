@@ -40,6 +40,7 @@ interface ConfigType {
 		inactivePanel: string;
 		carpark: string;
 		carparkLog: string;
+		carparkAdmin: string;
 	};
 }
 export const config: ConfigType = {
@@ -60,5 +61,6 @@ export const config: ConfigType = {
 		inactivePanel: getEnv('INACTIVE_PANEL_CHANNEL_ID'),
 		carpark: getEnv('CAR_PANEL_CHANNEL_ID'),
 		carparkLog: getEnv('CAR_LOG_CHANNEL_ID'),
+		carparkAdmin: getEnv('CAR_LOG_CHANNEL_ID'),
 	},
 };

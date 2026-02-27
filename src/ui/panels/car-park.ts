@@ -5,18 +5,20 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
+	inlineCode,
 } from 'discord.js';
 import { updatePanel } from './utils.js';
 
 export async function buildCarParkEmbed() {
 	const data: Car[] = await carParkRepository.getAll();
-
 	const description = data
 		.map((carData) => {
 			if (carData.who_take) {
-				return `🔴 ${carData.number} | ${carData.name} **Занял**: <@${carData.who_take}>`;
+				// return `🔴 ${carData.number} **| ${carData.name} |** **Занял**: <@${carData.who_take}>`;
+				return `🔴 ${inlineCode(carData.number)} **| ${carData.name} |** Занял: <@${carData.who_take}>`;
+				
 			} else {
-				return `🟢 ${carData.number} | ${carData.name}`;
+				return `🟢 ${inlineCode(carData.number)} **| ${carData.name}**`;
 			}
 		})
 		.join('\n');

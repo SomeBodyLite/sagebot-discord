@@ -3,8 +3,8 @@
     "id": "1",
     "name": "Lampadati Julia",
     "number": "SAGEXX00",
-    "who_take": "364715179075698688",
-    "taked_At": 1772196417076,
+    "who_take": null,
+    "taked_At": null,
     "roles": [
       "academy",
       "main",

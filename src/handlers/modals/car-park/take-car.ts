@@ -24,7 +24,7 @@ async function execute(i: ModalSubmitInteraction) {
 	await carParkRepository.update(carId, car);
 
 	await safeReply(i, {
-		content: `Вы выбрали автомобиль: ${car.name} | ${car.number}`,
+		content: `Вы выбрали автомобиль: ** ${car.name} | ${car.number}**`,
 	});
 
 	sendLog(

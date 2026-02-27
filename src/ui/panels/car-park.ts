@@ -18,7 +18,7 @@ export async function buildCarParkEmbed() {
 				return `🔴 ${inlineCode(carData.number)} **| ${carData.name} |** Занял: <@${carData.who_take}>`;
 				
 			} else {
-				return `🟢 ${inlineCode(carData.number)} **| ${carData.name}**`;
+				return `🟢 ${inlineCode(carData.number)} **| ${carData.name} |**`;
 			}
 		})
 		.join('\n');

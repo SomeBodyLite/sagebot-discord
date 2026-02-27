@@ -14,9 +14,9 @@ export async function buildCarParkEmbed() {
 	const description = data
 		.map((carData) => {
 			if (carData.who_take) {
-				return `🔒 ${carData.number} | ${carData.name} **Занял**: <@${carData.who_take}>`;
+				return `🔴 ${carData.number} | ${carData.name} **Занял**: <@${carData.who_take}>`;
 			} else {
-				return `✅ ${carData.number} | ${carData.name}`;
+				return `🟢 ${carData.number} | ${carData.name}`;
 			}
 		})
 		.join('\n');

@@ -22,7 +22,7 @@ export function createCarParkModal(freeCarsList: Car[]) {
 	const selectLabel = new LabelBuilder()
 		.setLabel('Выберите автомобиль')
 		.setDescription(
-			'Вы займете его на 2 часа, после чего бронирование нужно будет повторить!',
+			'Вы займете его на 3 часа, после чего бронирование нужно будет повторить!',
 		)
 		.setStringSelectMenuComponent(select);
 	const modal = new ModalBuilder({

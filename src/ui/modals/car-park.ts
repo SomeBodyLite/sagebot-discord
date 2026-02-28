@@ -27,7 +27,7 @@ export function createCarParkModal(freeCarsList: Car[]) {
 		.setStringSelectMenuComponent(select);
 	const modal = new ModalBuilder({
 		customId: 'modal_carpark',
-		title: 'Автопарк',
+		title: '🚗 Автопарк',
 	});
 	modal.addLabelComponents(selectLabel);
 	return modal;

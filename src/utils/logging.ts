@@ -1,9 +1,10 @@
-import { Client } from "discord.js";
+import { Client, EmbedBuilder } from "discord.js";
 
 export async function sendLog(
   client: Client,
   channelId: string,
-  message: string
+  message: string,
+  title?: string,
 ): Promise<void> {
   try {
     const channel = await client.channels.fetch(channelId);
@@ -11,10 +12,19 @@ export async function sendLog(
 
     if (!channel.isSendable()) return;
 
-    await channel.send({ content: message });
+    const embed = new EmbedBuilder()
+      .setDescription(message)
+      .setColor(0x2f3136)
+      .setTimestamp();
+
+    if (title) {
+      embed.setTitle(title);
+    }
+
+    await channel.send({ embeds: [embed] });
   } catch (e) {
-		if (e instanceof Error) {
-			console.error(e.message);
-		}
-	}
+    if (e instanceof Error) {
+      console.error(e.message);
+    }
+  }
 }

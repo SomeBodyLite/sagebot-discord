@@ -21,17 +21,17 @@ export async function buildCarParkEmbed() {
 				const minutes = diffMinutes % 60;
 				const time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 
-				return `🔴 ${inlineCode(carData.number)} **| ${carData.name}**
+				return `🔴 ** ${carData.name}** | ${carData.number}
          > Занял: <@${carData.who_take}> 
 				 > Осталось: ${time}`;
 			} else {
-				return `🟢 ${inlineCode(carData.number)} **| ${carData.name}**`;
+				return `🟢 ** ${carData.name}** | ${carData.number}`;
 			}
 		})
 		.join('\n');
 
 	return new EmbedBuilder()
-		.setTitle('Автопарк')
+		.setTitle('🚗 Автопарк')
 		.setColor(0x5865f2)
 		.setDescription(description);
 }

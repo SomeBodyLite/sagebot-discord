@@ -18,6 +18,8 @@ import {
 	getMskNow,
 } from '@/utils/time.js';
 import { config } from '@/config.js';
+import { client } from '@/index.js';
+import { getUserUsernames } from '@/utils/tools.js';
 
 async function buildAfkEmbed(): Promise<EmbedBuilder> {
 	const data = await afkRepository.getAll();
@@ -27,20 +29,24 @@ async function buildAfkEmbed(): Promise<EmbedBuilder> {
 		users.length === 0
 			? 'Сейчас никто не в АФК.'
 			: `Всего в АФК: **${users.length}**\n\n` +
-				users
-					.map(([id, info], idx) => {
-						const returnDate = new Date(info.until);
-						const returnText = isTomorrow(info.until)
-							? formatMskDateTime(returnDate)
-							: formatMskTime(returnDate);
+				(
+					await Promise.all(
+						users.map(async ([id, info], idx) => {
+							const returnDate = new Date(info.until);
+							const returnText = isTomorrow(info.until)
+								? formatMskDateTime(returnDate)
+								: formatMskTime(returnDate);
 
-						return `${idx + 1}. <@${id}>
-						${quote(`Причина: ${bold(info.reason)}`)} 
-						${quote(`Где: ${bold(info.location)}`)}
-						${quote(`Вернусь: ${bold(returnText)} МСК`)}
-					`;
-					})
-					.join('\n');
+							const user = await client.users.fetch(id);
+							const usernameString = await getUserUsernames(user);
+
+							return `${idx + 1}. ${usernameString}
+${quote(`Причина: ${bold(info.reason)}`)}
+${quote(`Где: ${bold(info.location)}`)}
+${quote(`Вернусь: ${bold(returnText)} МСК`)}`;
+						}),
+					)
+				).join('\n');
 
 	return new EmbedBuilder()
 		.setTitle(

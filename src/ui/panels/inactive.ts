@@ -10,6 +10,8 @@ import {
 } from 'discord.js';
 import { updatePanel } from './utils.js';
 import { config } from '@/config.js';
+import { getUserUsernames } from '@/utils/tools.js';
+import { client } from '@/index.js';
 
 export async function buildInactiveEmbed() {
 	const data = await inactiveRepository.getAll();
@@ -19,15 +21,18 @@ export async function buildInactiveEmbed() {
 		users.length === 0
 			? 'В инактиве никого нет.'
 			: `В инактиве **${users.length}** человек:\n\n` +
-				users
-					.map(
-						([id, info], idx) =>
-							`${idx + 1}. <@${id}>
+				(
+					await Promise.all(
+						users.map(async ([id, info], idx) => {
+							const user = await client.users.fetch(id);
+							const usernameString = await getUserUsernames(user);
+							return `${idx + 1}. ${usernameString}
 						${quote(`Причина: ${bold(info.reason)}`)} 
 						${quote(`До: ${bold(info.date)}`)}
-					`,
+						`;
+						}),
 					)
-					.join('\n');
+				).join('\n');
 
 	return new EmbedBuilder()
 		.setTitle('📅 Список инактива')

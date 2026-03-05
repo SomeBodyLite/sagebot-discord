@@ -8,27 +8,34 @@ import {
 	inlineCode,
 } from 'discord.js';
 import { updatePanel } from './utils.js';
+import { client } from '@/index.js';
+import { getUserUsernames } from '@/utils/tools.js';
 
 export async function buildCarParkEmbed() {
 	const data: Car[] = await carParkRepository.getAll();
-	const description = data
-		.map((carData) => {
-			if (carData.who_take) {
-				const diffMs =
-					3 * 60 * 60 * 1000 - (Date.now() - carData.taked_At!);
-				const diffMinutes = Math.floor(diffMs / 1000 / 60);
-				const hours = Math.floor(diffMinutes / 60);
-				const minutes = diffMinutes % 60;
-				const time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+	const description = (
+		await Promise.all(
+			data.map(async (carData) => {
+				if (carData.who_take) {
+					const diffMs =
+						3 * 60 * 60 * 1000 - (Date.now() - carData.taked_At!);
+					const diffMinutes = Math.floor(diffMs / 1000 / 60);
+					const hours = Math.floor(diffMinutes / 60);
+					const minutes = diffMinutes % 60;
+					const time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 
-				return `🔴 ** ${carData.name}** | ${carData.number}
-         > Занял: <@${carData.who_take}> 
+					const user = await client.users.fetch(carData.who_take);
+					const usernameString = await getUserUsernames(user);
+
+					return `🔴 ** ${carData.name}** | ${carData.number}
+         > Занял: ${usernameString}
 				 > Осталось: ${time}`;
-			} else {
-				return `🟢 ** ${carData.name}** | ${carData.number}`;
-			}
-		})
-		.join('\n');
+				} else {
+					return `🟢 ** ${carData.name}** | ${carData.number}`;
+				}
+			}),
+		)
+	).join('\n');
 
 	return new EmbedBuilder()
 		.setTitle('🚗 Автопарк')

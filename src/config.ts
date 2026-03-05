@@ -13,6 +13,9 @@ const PANEL_FILE = fileURLToPath(
 const CARPARK_FILE = fileURLToPath(
 	new URL('./data/carsParkData.json', import.meta.url),
 );
+const REQUEST_IN_FAM_FILE = fileURLToPath(
+	new URL('./data/carsParkData.json', import.meta.url),
+);
 
 function getEnv(name: string): string {
 	const value = process.env[name];
@@ -31,6 +34,7 @@ interface ConfigType {
 		inactive: string;
 		panels: string;
 		carpark: string;
+		requestInFam: string;
 	};
 	bannerUrl: string;
 	channels: {
@@ -41,6 +45,7 @@ interface ConfigType {
 		carpark: string;
 		carparkLog: string;
 		carparkAdmin: string;
+		requestInFam: string;
 	};
 }
 export const config: ConfigType = {
@@ -52,6 +57,7 @@ export const config: ConfigType = {
 		inactive: INACTIVE_DATA_FILE,
 		panels: PANEL_FILE,
 		carpark: CARPARK_FILE,
+		requestInFam: REQUEST_IN_FAM_FILE,
 	},
 	bannerUrl: getEnv('BANNER_URL'),
 	channels: {
@@ -62,5 +68,6 @@ export const config: ConfigType = {
 		carpark: getEnv('CAR_PANEL_CHANNEL_ID'),
 		carparkLog: getEnv('CAR_LOG_CHANNEL_ID'),
 		carparkAdmin: getEnv('CAR_ADMIN_CHANNEL_ID'),
+		requestInFam: getEnv('REQUEST_IN_FAMQ_CHANNEL_ID'),
 	},
 };

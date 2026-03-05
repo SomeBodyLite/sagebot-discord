@@ -32,7 +32,13 @@ async function main() {
 				if (data[userId].until && now >= data[userId].until) {
 					try {
 						const user = await client.users.fetch(userId);
+
+						user.send(
+							'Ваш AFK статус был снят по истечении указанного времени!',
+						);
+
 						const usernameString = await getUserUsernames(user);
+
 						await sendLog(
 							client,
 							config.channels.afkLog,
@@ -40,7 +46,11 @@ async function main() {
 							'⏰ АФК время истекло',
 						);
 					} catch (e) {
-						// Ignore fetch errors
+						if (e instanceof Error) {
+							logger.error(
+								`Не удалось отправить DM пользователю ${userId}: ${e.message}`,
+							);
+						}
 					}
 
 					await afkRepository.remove(userId);
